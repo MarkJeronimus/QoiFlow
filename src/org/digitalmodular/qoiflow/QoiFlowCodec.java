@@ -1,5 +1,6 @@
 package org.digitalmodular.qoiflow;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,5 +88,44 @@ public class QoiFlowCodec {
 					break;
 			}
 		}
+	}
+
+	public int getVariableLength(int index) {
+		requireRange(0, variableLengths.length, index, "index");
+
+		if (index < variableLengths.length) {
+			return variableLengths[index];
+		} else {
+			int remaining = 256 - numFixedCodes;
+			for (int length : variableLengths) {
+				remaining -= length;
+			}
+
+			return remaining;
+		}
+	}
+
+	public void reset() {
+		int codeValue                = 256;
+		int variableInstructionIndex = 0;
+		for (int i = 0; i < instructions.size(); i++) {
+			QoiInstruction instruction = instructions.get(i);
+
+			int numCodes = instruction.getNumCodes();
+			if (numCodes > 0) {
+				codeValue -= numCodes;
+			} else {
+				codeValue -= getVariableLength(variableInstructionIndex);
+				variableInstructionIndex++;
+			}
+
+			startCodes[i] = codeValue;
+		}
+
+		System.out.println(Arrays.toString(startCodes));
+	}
+
+	public void encode(QoiColor color, ByteBuffer dst) {
+
 	}
 }

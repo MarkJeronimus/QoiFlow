@@ -12,19 +12,17 @@ import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 // Created 2022-06-05
 public class TestMain {
 	public static void main(String... args) {
-		QoiInstruction ins1 = new QoiInstructionHistory(1, 1, 1, 0);
-		QoiInstruction ins2 = new QoiInstructionHistory(1, 1, 1, 0);
-		QoiInstruction ins3 = new QoiInstructionHistory(1, 1, 1, 0);
-		QoiInstruction ins4 = new QoiInstructionHistory(1, 1, 1, 0);
+		QoiInstruction rgba = new QoiInstructionRGBA(8, 8, 8, 0);
+		QoiInstruction hist1 = new QoiInstructionHistory(1, 1, 1, 0);
+		QoiInstruction hist2 = new QoiInstructionHistory(1, 1, 1, 0);
+		QoiInstruction hist3 = new QoiInstructionHistory(1, 1, 1, 0);
+		QoiInstruction hist4 = new QoiInstructionHistory(1, 1, 1, 0);
 
-		QoiFlowCodec enc = new QoiFlowCodec(Arrays.asList(ins1, ins2, ins3, ins4));
-		System.out.println(enc.getNumVariableCodes());
-		System.out.println(enc.getNumVariableLengths());
-
+		QoiFlowCodec enc = new QoiFlowCodec(Arrays.asList(hist1, hist2, rgba, hist3, hist4));
 		enc.setVariableLength(0, 6);
 		enc.setVariableLength(1, 10);
 		enc.setVariableLength(2, 100);
 
-		enc.setVariableLength(2, 252);
+		enc.reset();
 	}
 }
