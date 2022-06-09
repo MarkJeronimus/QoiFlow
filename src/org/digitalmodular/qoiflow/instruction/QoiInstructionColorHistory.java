@@ -9,13 +9,13 @@ import org.digitalmodular.qoiflow.QoiColor;
  * @author Mark Jeronimus
  */
 // Created 2022-06-05
-public class QoiInstructionHistory extends QoiInstruction {
+public class QoiInstructionColorHistory extends QoiInstruction {
 	private int[][] recentColorsList = new int[0][];
 	private int     recentColorIndex = 0;
 
 	private int recentColorFound = -1;
 
-	public QoiInstructionHistory(int bitsR, int bitsG, int bitsB, int bitsA) {
+	public QoiInstructionColorHistory(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
 	}
 
