@@ -47,10 +47,10 @@ public class QoiInstructionHistory extends QoiInstruction {
 	public boolean canEncode(QoiColor color) {
 		recentColorFound = -1;
 		for (int i = 0; i < recentColorsList.length; i++) {
-			if (recentColorsList[i][0] == color.getCurrentR() &&
-			    recentColorsList[i][1] == color.getCurrentG() &&
-			    recentColorsList[i][2] == color.getCurrentB() &&
-			    recentColorsList[i][3] == color.getCurrentA()) {
+			if (recentColorsList[i][0] == color.r() &&
+			    recentColorsList[i][1] == color.g() &&
+			    recentColorsList[i][2] == color.b() &&
+			    recentColorsList[i][3] == color.a()) {
 				recentColorFound = i;
 				break;
 			}
