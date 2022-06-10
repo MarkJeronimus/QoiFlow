@@ -43,20 +43,17 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public boolean canEncode(QoiColor color) {
+	public int encode(QoiColor color, byte[] dst) {
 		recentColorFound = false;
 		for (int i = 0; i < recentColorsList.length; i++) {
 			if (recentColorsList[i].equals(color)) {
 				recentColorFound = true;
-				break;
+				dst[0] = (byte)(i + codeOffset);
+				return 1;
 			}
 		}
 
-		return recentColorFound;
-	}
-
-	@Override
-	public void encode(QoiColor color, ByteBuffer dst) {
+		return 0;
 	}
 
 	@Override

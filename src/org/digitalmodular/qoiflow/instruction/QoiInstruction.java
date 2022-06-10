@@ -89,9 +89,7 @@ public abstract class QoiInstruction {
 	public void reset() {
 	}
 
-	public abstract boolean canEncode(QoiColor color);
-
-	public abstract void encode(QoiColor color, ByteBuffer dst);
+	public abstract int encode(QoiColor color, byte[] dst);
 
 	public abstract void decode(ByteBuffer src, QoiColor color);
 }
