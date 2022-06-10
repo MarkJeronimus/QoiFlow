@@ -16,21 +16,27 @@ import static org.digitalmodular.util.Validators.requireSizeAtLeast;
 // Created 2022-06-05
 public class QoiFlowCodec {
 	private final List<QoiInstruction> instructions;
+	private final int                  maxInstructionSize;
 	private final int                  numFixedCodes;
 	private final int[]                variableLengths;
 
 	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
 
+		int maxInstructionSize      = 0;
 		int numVariableInstructions = 0;
 		int numFixedCodes           = 0;
 		for (QoiInstruction instruction : instructions) {
+			maxInstructionSize = Math.max(maxInstructionSize, instruction.getMaxSize());
+
 			if (instruction.getNumCodes() == 0) {
 				numVariableInstructions++;
 			}
 
 			numFixedCodes += instruction.getNumCodes();
 		}
+
+		this.maxInstructionSize = maxInstructionSize;
 
 		if (numVariableInstructions == 0) {
 			throw new IllegalArgumentException("At least one variable-length instruction is required");
@@ -42,6 +48,10 @@ public class QoiFlowCodec {
 		this.numFixedCodes = numFixedCodes;
 		variableLengths = new int[numVariableInstructions - 1];
 		Arrays.fill(variableLengths, 1);
+	}
+
+	public int getMaxInstructionSize() {
+		return maxInstructionSize;
 	}
 
 	public int getNumVariableCodes() {
@@ -125,6 +135,5 @@ public class QoiFlowCodec {
 	}
 
 	public void encode(QoiColor color, ByteBuffer dst) {
-
 	}
 }
