@@ -13,10 +13,10 @@ import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 public class TestMain {
 	public static void main(String... args) {
 		QoiInstruction rgba  = new QoiInstructionRGBA(8, 8, 8, 0);
-		QoiInstruction hist1 = new QoiInstructionColorHistory(1, 1, 1, 0);
-		QoiInstruction hist2 = new QoiInstructionColorHistory(1, 1, 1, 0);
-		QoiInstruction hist3 = new QoiInstructionColorHistory(1, 1, 1, 0);
-		QoiInstruction hist4 = new QoiInstructionColorHistory(1, 1, 1, 0);
+		QoiInstruction hist1 = new QoiInstructionColorHistory();
+		QoiInstruction hist2 = new QoiInstructionColorHistory();
+		QoiInstruction hist3 = new QoiInstructionColorHistory();
+		QoiInstruction hist4 = new QoiInstructionColorHistory();
 
 		QoiFlowCodec enc = new QoiFlowCodec(Arrays.asList(hist1, hist2, rgba, hist3, hist4));
 		enc.setVariableLength(0, 6);

@@ -14,10 +14,6 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public void reset() {
-	}
-
-	@Override
 	public boolean canEncode(QoiColor color) {
 		return false;
 	}
