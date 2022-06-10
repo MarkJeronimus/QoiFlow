@@ -57,6 +57,14 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
+	public void colorEncoded(QoiColor color) {
+		if (!recentColorFound) {
+			recentColorsList[recentColorIndex] = color;
+			recentColorIndex = (recentColorIndex + 1) % recentColorsList.length;
+		}
+	}
+
+	@Override
 	public void decode(ByteBuffer src, QoiColor color) {
 	}
 }
