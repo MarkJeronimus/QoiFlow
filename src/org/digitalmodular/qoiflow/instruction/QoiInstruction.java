@@ -15,6 +15,8 @@ public abstract class QoiInstruction {
 	protected int bitsB;
 	protected int bitsA;
 
+	protected int codeOffset = 0;
+
 	protected QoiInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
 		this.bitsR = requireAtLeast(1, bitsR, "bitsR");
 		this.bitsG = requireAtLeast(1, bitsG, "bitsG");
@@ -41,11 +43,19 @@ public abstract class QoiInstruction {
 		return 1 << (8 - numRemaining);
 	}
 
+	public int getCodeOffset() {
+		return codeOffset;
+	}
+
+	public void setCodeOffset(int codeOffset) {
+		this.codeOffset = codeOffset;
+	}
+
 	public abstract void reset();
 
 	public abstract boolean canEncode(QoiColor color);
 
-	public abstract void encode(QoiColor color, int startCode, ByteBuffer dst);
+	public abstract void encode(QoiColor color, ByteBuffer dst);
 
-	public abstract void decode(ByteBuffer src, int startCode, QoiColor color);
+	public abstract void decode(ByteBuffer src, QoiColor color);
 }

@@ -60,10 +60,10 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public void encode(QoiColor color, int startCode, ByteBuffer dst) {
+	public void encode(QoiColor color, ByteBuffer dst) {
 	}
 
 	@Override
-	public void decode(ByteBuffer src, int startCode, QoiColor color) {
+	public void decode(ByteBuffer src, QoiColor color) {
 	}
 }

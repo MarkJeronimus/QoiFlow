@@ -18,11 +18,9 @@ public class QoiFlowCodec {
 	private final List<QoiInstruction> instructions;
 	private final int                  numFixedCodes;
 	private final int[]                variableLengths;
-	private final int[]                startCodes;
 
 	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
-		startCodes = new int[instructions.size()];
 
 		int numVariableInstructions = 0;
 		int numFixedCodes           = 0;
@@ -106,23 +104,24 @@ public class QoiFlowCodec {
 	}
 
 	public void reset() {
-		int codeValue                = 256;
-		int variableInstructionIndex = 0;
-		for (int i = 0; i < instructions.size(); i++) {
-			QoiInstruction instruction = instructions.get(i);
+		prepareCodeOffsets();
+	}
 
+	private void prepareCodeOffsets() {
+		int codeOffset               = 256;
+		int variableInstructionIndex = 0;
+		for (QoiInstruction instruction : instructions) {
 			int numCodes = instruction.getNumCodes();
+
 			if (numCodes > 0) {
-				codeValue -= numCodes;
+				codeOffset -= numCodes;
 			} else {
-				codeValue -= getVariableLength(variableInstructionIndex);
+				codeOffset -= getVariableLength(variableInstructionIndex);
 				variableInstructionIndex++;
 			}
 
-			startCodes[i] = codeValue;
+			instruction.setCodeOffset(codeOffset);
 		}
-
-		System.out.println(Arrays.toString(startCodes));
 	}
 
 	public void encode(QoiColor color, ByteBuffer dst) {
