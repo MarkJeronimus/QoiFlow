@@ -15,10 +15,16 @@ import static org.digitalmodular.util.Validators.requireSizeAtLeast;
  */
 // Created 2022-06-05
 public class QoiFlowCodec {
+	public static final QoiColor START_COLOR = new QoiColor(0, 0, 0, 0);
+
+	// Codec configuration
 	private final List<QoiInstruction> instructions;
 	private final int                  maxInstructionSize;
 	private final int                  numFixedCodes;
 	private final int[]                variableLengths;
+
+	// Codec state
+	private QoiColor previousColor = START_COLOR;
 
 	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
@@ -115,6 +121,8 @@ public class QoiFlowCodec {
 
 	public void reset() {
 		prepareCodeOffsets();
+
+		previousColor = START_COLOR;
 	}
 
 	private void prepareCodeOffsets() {
@@ -135,5 +143,8 @@ public class QoiFlowCodec {
 	}
 
 	public void encode(QoiColor color, ByteBuffer dst) {
+		QoiPixelData pixel = new QoiPixelData(previousColor, color);
+
+		previousColor = color;
 	}
 }

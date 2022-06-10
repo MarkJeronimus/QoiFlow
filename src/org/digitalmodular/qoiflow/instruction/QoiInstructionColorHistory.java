@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
  * @author Mark Jeronimus
@@ -43,7 +44,9 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiColor color, byte[] dst) {
+	public int encode(QoiPixelData pixel, byte[] dst) {
+		QoiColor color = pixel.getColor();
+
 		recentColorFound = false;
 		for (int i = 0; i < recentColorsList.length; i++) {
 			if (recentColorsList[i].equals(color)) {

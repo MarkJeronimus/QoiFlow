@@ -3,6 +3,7 @@ package org.digitalmodular.qoiflow.instruction;
 import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiPixelData;
 import static org.digitalmodular.util.Validators.requireAtLeast;
 
 /**
@@ -89,7 +90,7 @@ public abstract class QoiInstruction {
 	public void reset() {
 	}
 
-	public abstract int encode(QoiColor color, byte[] dst);
+	public abstract int encode(QoiPixelData pixel, byte[] dst);
 
 	/**
 	 * Notifies to to this encoder that the provided color has been encoded (not necessarily by this instruction).

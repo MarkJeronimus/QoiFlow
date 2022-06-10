@@ -3,6 +3,7 @@ package org.digitalmodular.qoiflow.instruction;
 import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
  * @author Mark Jeronimus
@@ -14,7 +15,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiColor color, byte[] dst) {
+	public int encode(QoiPixelData pixel, byte[] dst) {
 		return 0;
 	}
 
