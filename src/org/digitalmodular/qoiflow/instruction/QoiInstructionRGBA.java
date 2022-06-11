@@ -23,10 +23,10 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	public int encode(QoiPixelData pixel, byte[] dst) {
 		QoiColor color = pixel.getColor();
 
-		int r    = (color.r() << shiftR) & maskR;
-		int g    = (color.g() << shiftG) & maskG;
-		int b    = (color.b() << shiftB) & maskB;
-		int a    = color.a() & maskA;
+		int r = ((color.r() << 24) >>> msbShiftR) & maskR;
+		int g = ((color.g() << 24) >>> msbShiftG) & maskG;
+		int b = ((color.b() << 24) >>> msbShiftB) & maskB;
+		int a = ((color.a() << 24) >>> msbShiftA) & maskA;
 		int rgba = r | g | b | a;
 
 		for (int i = 0; i < numBytes; i++) {

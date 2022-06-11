@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiPixelData;
-import static org.digitalmodular.util.Validators.requireAtLeast;
+import static org.digitalmodular.util.Validators.requireRange;
 
 /**
  * @author Mark Jeronimus
@@ -16,28 +16,39 @@ public abstract class QoiInstruction {
 	protected final int bitsB;
 	protected final int bitsA;
 
-	protected final int numBits;
 	protected final int shiftR;
 	protected final int shiftG;
 	protected final int shiftB;
+
+	protected final int msbShiftR;
+	protected final int msbShiftG;
+	protected final int msbShiftB;
+	protected final int msbShiftA;
 
 	protected final int maskR;
 	protected final int maskG;
 	protected final int maskB;
 	protected final int maskA;
 
+	protected final int numBits;
+
 	protected int codeOffset = 0;
 
 	protected QoiInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
-		this.bitsR = requireAtLeast(1, bitsR, "bitsR");
-		this.bitsG = requireAtLeast(1, bitsG, "bitsG");
-		this.bitsB = requireAtLeast(1, bitsB, "bitsB");
-		this.bitsA = requireAtLeast(0, bitsA, "bitsA");
+		this.bitsR = requireRange(1, 8, bitsR, "bitsR");
+		this.bitsG = requireRange(1, 8, bitsG, "bitsG");
+		this.bitsB = requireRange(1, 8, bitsB, "bitsB");
+		this.bitsA = requireRange(0, 8, bitsA, "bitsA");
 
 		shiftB = bitsA;
 		shiftG = shiftB + bitsB;
 		shiftR = shiftG + bitsG;
 		numBits = shiftR + bitsR;
+
+		msbShiftA = 32 - bitsA;
+		msbShiftB = msbShiftA - bitsB;
+		msbShiftG = msbShiftB - bitsG;
+		msbShiftR = msbShiftG - bitsR;
 
 		maskR = (1 << numBits) - (1 << shiftR);
 		maskG = (1 << shiftR) - (1 << shiftG);
