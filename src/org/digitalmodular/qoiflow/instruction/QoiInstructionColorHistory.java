@@ -32,8 +32,11 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 		return 1;
 	}
 
-	public void setNumValues(int numValues) {
-		recentColorsList = new QoiColor[numValues];
+	@Override
+	public void setCodeOffsetAndCount(int codeOffset, int calculatedCodeCount) {
+		super.setCodeOffsetAndCount(codeOffset, calculatedCodeCount);
+
+		recentColorsList = new QoiColor[calculatedCodeCount];
 	}
 
 	@Override

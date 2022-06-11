@@ -3,6 +3,7 @@ package org.digitalmodular.qoiflow.instruction;
 import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiFlowCodec;
 import org.digitalmodular.qoiflow.QoiPixelData;
 import static org.digitalmodular.util.Validators.requireRange;
 
@@ -32,7 +33,8 @@ public abstract class QoiInstruction {
 
 	protected final int numBits;
 
-	protected int codeOffset = 0;
+	protected int codeOffset          = 0;
+	protected int calculatedCodeCount = 1;
 
 	protected QoiInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
 		this.bitsR = requireRange(1, 8, bitsR, "bitsR");
@@ -85,12 +87,24 @@ public abstract class QoiInstruction {
 		return getMaxSize();
 	}
 
+	public void setCodeOffsetAndCount(int codeOffset, int calculatedCodeCount) {
+		this.codeOffset = codeOffset;
+		this.calculatedCodeCount = calculatedCodeCount;
+	}
+
 	public int getCodeOffset() {
 		return codeOffset;
 	}
 
-	public void setCodeOffset(int codeOffset) {
-		this.codeOffset = codeOffset;
+	/**
+	 * Returns the total number of codes (values) of the first byte of this instruction, as calculated by the codec.
+	 * <p>
+	 * This is only valid when {@link QoiFlowCodec#reset()} has been called on the codec.
+	 * <p>
+	 * When this is not a variable-length instruction, the value will then equal {@link #getNumCodes()}.
+	 */
+	public int getCalculatedCodeCount() {
+		return calculatedCodeCount;
 	}
 
 	/**

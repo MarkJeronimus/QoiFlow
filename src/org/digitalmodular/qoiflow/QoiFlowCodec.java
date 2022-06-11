@@ -139,14 +139,14 @@ public class QoiFlowCodec {
 		for (QoiInstruction instruction : instructions) {
 			int numCodes = instruction.getNumCodes();
 
-			if (numCodes > 0) {
-				codeOffset -= numCodes;
-			} else {
-				codeOffset -= getVariableLength(variableInstructionIndex);
+			if (numCodes == 0) {
+				numCodes = getVariableLength(variableInstructionIndex);
 				variableInstructionIndex++;
 			}
 
-			instruction.setCodeOffset(codeOffset);
+			codeOffset -= numCodes;
+
+			instruction.setCodeOffsetAndCount(codeOffset, numCodes);
 		}
 	}
 
@@ -154,10 +154,12 @@ public class QoiFlowCodec {
 		int lastCodeOffset = 256;
 		for (QoiInstruction instruction : instructions) {
 			int codeOffset = instruction.getCodeOffset();
+			int numCodes   = instruction.getCalculatedCodeCount();
 			if (lastCodeOffset - 1 == codeOffset) {
-				System.out.println(instruction + ": " + codeOffset);
+				System.out.println(instruction + ": " + codeOffset + " (" + numCodes + ')');
 			} else {
-				System.out.println(instruction + ": " + (lastCodeOffset - 1) + ".." + codeOffset);
+				System.out.println(
+						instruction + ": " + (lastCodeOffset - 1) + ".." + codeOffset + " (" + numCodes + ')');
 			}
 			lastCodeOffset = codeOffset;
 		}
@@ -179,6 +181,10 @@ public class QoiFlowCodec {
 
 		if (!encoded) {
 			throw new AssertionError("None of the instructions could encode: " + pixel);
+		}
+
+		for (QoiInstruction instruction : instructions) {
+			instruction.colorEncoded(color);
 		}
 
 		previousColor = color;
