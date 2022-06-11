@@ -26,4 +26,9 @@ public class QoiPixelData {
 	public QoiColorChroma getChroma() {
 		return chroma;
 	}
+
+	@Override
+	public String toString() {
+		return "QoiPixelData(" + "color=" + color + ", delta=" + delta + ", chroma=" + chroma + ')';
+	}
 }

@@ -22,4 +22,14 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	@Override
 	public void decode(ByteBuffer src, QoiColor color) {
 	}
+
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
+	@Override
+	public String toString() {
+		if (bitsA > 0) {
+			return "RGBA" + bitsR + bitsR + bitsR + bitsA;
+		} else {
+			return "RGB" + bitsR + bitsR + bitsR;
+		}
+	}
 }

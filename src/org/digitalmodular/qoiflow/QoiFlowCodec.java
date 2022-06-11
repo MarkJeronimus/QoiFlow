@@ -142,6 +142,19 @@ public class QoiFlowCodec {
 		}
 	}
 
+	public void printCodeOffsets() {
+		int lastCodeOffset = 256;
+		for (QoiInstruction instruction : instructions) {
+			int codeOffset = instruction.getCodeOffset();
+			if (lastCodeOffset - 1 == codeOffset) {
+				System.out.println(instruction + ": " + codeOffset);
+			} else {
+				System.out.println(instruction + ": " + (lastCodeOffset - 1) + ".." + codeOffset);
+			}
+			lastCodeOffset = codeOffset;
+		}
+	}
+
 	public void encode(QoiColor color, ByteBuffer dst) {
 		QoiPixelData pixel = new QoiPixelData(previousColor, color);
 

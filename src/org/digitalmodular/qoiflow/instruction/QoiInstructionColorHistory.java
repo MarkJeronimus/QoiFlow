@@ -70,4 +70,10 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	@Override
 	public void decode(ByteBuffer src, QoiColor color) {
 	}
+
+	@Override
+	public String toString() {
+		//noinspection StringConcatenationMissingWhitespace
+		return "Hist" + recentColorsList.length;
+	}
 }
