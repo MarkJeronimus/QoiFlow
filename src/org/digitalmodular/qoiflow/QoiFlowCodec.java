@@ -26,6 +26,9 @@ public class QoiFlowCodec {
 	// Codec state
 	private QoiColor previousColor = START_COLOR;
 
+	// Temporary state (prevent rapid allocation/de-allocation)
+	private final byte[] buffer;
+
 	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
 
@@ -43,6 +46,7 @@ public class QoiFlowCodec {
 		}
 
 		this.maxInstructionSize = maxInstructionSize;
+		buffer = new byte[maxInstructionSize];
 
 		if (numVariableInstructions == 0) {
 			throw new IllegalArgumentException("At least one variable-length instruction is required");
@@ -123,6 +127,10 @@ public class QoiFlowCodec {
 		prepareCodeOffsets();
 
 		previousColor = START_COLOR;
+
+		for (QoiInstruction instruction : instructions) {
+			instruction.reset();
+		}
 	}
 
 	private void prepareCodeOffsets() {
@@ -158,6 +166,22 @@ public class QoiFlowCodec {
 	public void encode(QoiColor color, ByteBuffer dst) {
 		QoiPixelData pixel = new QoiPixelData(previousColor, color);
 
+		boolean encoded = false;
+
+		for (QoiInstruction instruction : instructions) {
+			int numBytes = instruction.encode(pixel, buffer);
+			if (numBytes > 0) {
+				dst.put(buffer, 0, numBytes);
+				encoded = true;
+				break;
+			}
+		}
+
+		if (!encoded) {
+			throw new AssertionError("None of the instructions could encode: " + pixel);
+		}
+
 		previousColor = color;
+		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
 	}
 }

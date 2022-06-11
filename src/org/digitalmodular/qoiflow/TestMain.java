@@ -1,5 +1,6 @@
 package org.digitalmodular.qoiflow;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
@@ -18,7 +19,16 @@ public class TestMain {
 
 		QoiFlowCodec enc = new QoiFlowCodec(Arrays.asList(hist4, rgba24, rgba32));
 
+		ByteBuffer dst = ByteBuffer.allocate(100);
+
 		enc.reset();
 		enc.printCodeOffsets();
+		enc.encode(new QoiColor(1, 2, 3, 0), dst);
+		enc.encode(new QoiColor(1, 2, 3, 0), dst);
+		enc.encode(new QoiColor(1, 2, 3, 0), dst);
+		enc.encode(new QoiColor(4, 3, 2, 0), dst);
+		enc.encode(new QoiColor(4, 3, 2, 0), dst);
+		enc.encode(new QoiColor(4, 3, 2, 0), dst);
+		enc.encode(new QoiColor(1, 2, 3, 0), dst);
 	}
 }

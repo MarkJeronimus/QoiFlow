@@ -10,13 +10,36 @@ import org.digitalmodular.qoiflow.QoiPixelData;
  */
 // Created 2022-06-05
 public class QoiInstructionRGBA extends QoiInstruction {
+	private final int numBytes;
+
 	public QoiInstructionRGBA(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
+
+		//noinspection OverridableMethodCallDuringObjectConstruction
+		numBytes = getMaxSize();
 	}
 
 	@Override
 	public int encode(QoiPixelData pixel, byte[] dst) {
-		return 0;
+		QoiColor color = pixel.getColor();
+
+		int r    = (color.r() << shiftR) & maskR;
+		int g    = (color.g() << shiftG) & maskG;
+		int b    = (color.b() << shiftB) & maskB;
+		int a    = color.a() & maskA;
+		int rgba = r | g | b | a;
+
+		for (int i = 0; i < numBytes; i++) {
+			int shift = 8 * (numBytes - i - 1);
+			if (shift < 32)
+				dst[i] = (byte)(rgba >> shift);
+			else
+				dst[i] = 0;
+		}
+
+		dst[0] |= codeOffset;
+
+		return numBytes;
 	}
 
 	@Override
