@@ -27,6 +27,14 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		int g = ((color.g() << 24) >>> msbShiftG) & maskG;
 		int b = ((color.b() << 24) >>> msbShiftB) & maskB;
 		int a = ((color.a() << 24) >>> msbShiftA) & maskA;
+
+		if (r << msbShiftR >>> 24 != color.r() ||
+		    g << msbShiftG >>> 24 != color.g() ||
+		    b << msbShiftB >>> 24 != color.b() ||
+		    a << msbShiftA >>> 24 != color.a()) {
+			return 0;
+		}
+
 		int rgba = r | g | b | a;
 
 		for (int i = 0; i < numBytes; i++) {

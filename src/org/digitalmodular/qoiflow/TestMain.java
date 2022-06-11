@@ -25,8 +25,8 @@ public class TestMain {
 		enc.reset();
 		enc.printCodeOffsets();
 		enc.encode(new QoiColor(0xE8, 0xF4, 0xE8, 0), dst);
-		enc.encode(new QoiColor(1, 2, 3, 0), dst);
-		enc.encode(new QoiColor(1, 2, 3, 0), dst);
+		enc.encode(new QoiColor(1, 2, 3, 1), dst);
+		enc.encode(new QoiColor(1, 2, 3, 1), dst);
 		enc.encode(new QoiColor(1, 2, 3, 0), dst);
 		enc.encode(new QoiColor(4, 3, 2, 0), dst);
 		enc.encode(new QoiColor(4, 3, 2, 0), dst);
