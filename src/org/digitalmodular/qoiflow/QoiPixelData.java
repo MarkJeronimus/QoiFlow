@@ -5,14 +5,20 @@ package org.digitalmodular.qoiflow;
  */
 // Created 2022-06-09
 public class QoiPixelData {
+	private final QoiColor       previous;
 	private final QoiColor       color;
 	private final QoiColorDelta  delta;
 	private final QoiColorChroma chroma;
 
-	public QoiPixelData(QoiColor previous, QoiColor current) {
-		color = current;
-		delta = QoiColorDelta.fromColors(previous, current);
-		chroma = QoiColorChroma.fromColors(previous, current);
+	public QoiPixelData(QoiColor previous, QoiColor color) {
+		this.previous = previous;
+		this.color = color;
+		delta = QoiColorDelta.fromColors(previous, color);
+		chroma = QoiColorChroma.fromColors(previous, color);
+	}
+
+	public QoiColor getPrevious() {
+		return previous;
 	}
 
 	public QoiColor getColor() {
@@ -29,6 +35,9 @@ public class QoiPixelData {
 
 	@Override
 	public String toString() {
-		return "QoiPixelData(" + "color=" + color + ", delta=" + delta + ", chroma=" + chroma + ')';
+		return "QoiPixelData(previous=" + previous +
+		       ", color=" + color +
+		       ", delta=" + delta +
+		       ", chroma=" + chroma + ')';
 	}
 }

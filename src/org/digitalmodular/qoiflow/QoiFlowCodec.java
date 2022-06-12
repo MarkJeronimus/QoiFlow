@@ -168,22 +168,35 @@ public class QoiFlowCodec {
 	public void encode(QoiColor color, ByteBuffer dst) {
 		QoiPixelData pixel = new QoiPixelData(previousColor, color);
 
-		boolean encoded = false;
+		preEncode(pixel, dst);
+		mainEncode(pixel, dst);
 
+		previousColor = color;
+		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
+	}
+
+	/**
+	 * Give instructions the opportunity to emit deferred data based on the new pixel, before actual encoding begins.
+	 * <p>
+	 * This is required, for example, for RLE, to emit instructions when the color is no longer equal to the previous.
+	 * <p>
+	 * Does nothing unless overridden.
+	 */
+	private void preEncode(QoiPixelData pixel, ByteBuffer dst) {
+		for (QoiInstruction instruction : instructions) {
+			instruction.preEncode(pixel, dst);
+		}
+	}
+
+	private void mainEncode(QoiPixelData pixel, ByteBuffer dst) {
 		for (QoiInstruction instruction : instructions) {
 			int numBytes = instruction.encode(pixel, buffer);
 			if (numBytes >= 0) {
 				dst.put(buffer, 0, numBytes);
-				encoded = true;
-				break;
+				return;
 			}
 		}
 
-		if (!encoded) {
-			throw new AssertionError("None of the instructions could encode: " + pixel);
-		}
-
-		previousColor = color;
-		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
+		throw new AssertionError("None of the instructions could encode: " + pixel);
 	}
 }

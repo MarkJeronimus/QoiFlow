@@ -69,6 +69,15 @@ public abstract class QoiInstruction {
 	}
 
 	/**
+	 * Returns the minimum number of bytes this instruction can use.
+	 * <p>
+	 * By default this is identical to {@link #getMaxSize()}.
+	 */
+	public int getMinSize() {
+		return getMaxSize();
+	}
+
+	/**
 	 * Returns the maximum number of bytes this instruction can use.
 	 * <p>
 	 * By default this is determined by the sum of the number of bits of the four components.
@@ -76,15 +85,6 @@ public abstract class QoiInstruction {
 	 */
 	public int getMaxSize() {
 		return (numBits + 8) / 8;
-	}
-
-	/**
-	 * Returns the minimum number of bytes this instruction can use.
-	 * <p>
-	 * By default this is identical to {@link #getMaxSize()}.
-	 */
-	public int getMinSize() {
-		return getMaxSize();
 	}
 
 	public void setCodeOffsetAndCount(int codeOffset, int calculatedCodeCount) {
@@ -113,6 +113,18 @@ public abstract class QoiInstruction {
 	 * Does nothing unless overridden.
 	 */
 	public void reset() {
+	}
+
+	/**
+	 * Give the instruction the opportunity to emit deferred data based on the new pixel.
+	 * <p>
+	 * Unlike {@link #encode(QoiPixelData, byte[])}, this will be called on every instruction always.
+	 * <p>
+	 * This is required, for example, for RLE, to emit instructions when the color is no longer equal to the previous.
+	 * <p>
+	 * Does nothing unless overridden.
+	 */
+	public void preEncode(QoiPixelData pixel, ByteBuffer dst) {
 	}
 
 	/**
