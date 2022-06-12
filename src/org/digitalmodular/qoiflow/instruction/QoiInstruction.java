@@ -117,15 +117,5 @@ public abstract class QoiInstruction {
 
 	public abstract int encode(QoiPixelData pixel, byte[] dst);
 
-	/**
-	 * Notifies to to this encoder that the provided color has been encoded (not necessarily by this instruction).
-	 * <p>
-	 * Useful for <em>e.g.</em> RLE encoders to determine if the next color matches the last.
-	 * <p>
-	 * Does nothing unless overridden.
-	 */
-	public void colorEncoded(QoiColor color) {
-	}
-
 	public abstract void decode(ByteBuffer src, QoiColor color);
 }

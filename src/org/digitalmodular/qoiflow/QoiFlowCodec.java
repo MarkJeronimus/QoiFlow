@@ -183,10 +183,6 @@ public class QoiFlowCodec {
 			throw new AssertionError("None of the instructions could encode: " + pixel);
 		}
 
-		for (QoiInstruction instruction : instructions) {
-			instruction.colorEncoded(color);
-		}
-
 		previousColor = color;
 		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
 	}

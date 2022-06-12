@@ -59,15 +59,11 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 			}
 		}
 
-		return 0;
-	}
-
-	@Override
-	public void colorEncoded(QoiColor color) {
-		if (!recentColorFound) {
+		// Unknown colors get added.
 			recentColorsList[recentColorIndex] = color;
 			recentColorIndex = (recentColorIndex + 1) % recentColorsList.length;
-		}
+
+		return 0;
 	}
 
 	@Override
@@ -77,6 +73,6 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	@Override
 	public String toString() {
 		//noinspection StringConcatenationMissingWhitespace
-		return "Hist" + recentColorsList.length;
+		return "HIST" + calculatedCodeCount;
 	}
 }
