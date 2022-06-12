@@ -115,6 +115,14 @@ public abstract class QoiInstruction {
 	public void reset() {
 	}
 
+	/**
+	 * Attempts to encode the pixel.
+	 * <p>
+	 * The first instruction that can encode the pixel will end the encoding phase.
+	 *
+	 * @return The amount of bytes this instruction stored in {@code dst} encode the color,
+	 * or -1 if it could not encode.
+	 */
 	public abstract int encode(QoiPixelData pixel, byte[] dst);
 
 	public abstract void decode(ByteBuffer src, QoiColor color);

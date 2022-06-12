@@ -32,7 +32,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		    g << msbShiftG >>> 24 != color.g() ||
 		    b << msbShiftB >>> 24 != color.b() ||
 		    a << msbShiftA >>> 24 != color.a()) {
-			return 0;
+			return -1;
 		}
 
 		int rgba = r | g | b | a;

@@ -60,10 +60,10 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 		}
 
 		// Unknown colors get added.
-			recentColorsList[recentColorIndex] = color;
-			recentColorIndex = (recentColorIndex + 1) % recentColorsList.length;
+		recentColorsList[recentColorIndex] = color;
+		recentColorIndex = (recentColorIndex + 1) % recentColorsList.length;
 
-		return 0;
+		return -1;
 	}
 
 	@Override

@@ -172,7 +172,7 @@ public class QoiFlowCodec {
 
 		for (QoiInstruction instruction : instructions) {
 			int numBytes = instruction.encode(pixel, buffer);
-			if (numBytes > 0) {
+			if (numBytes >= 0) {
 				dst.put(buffer, 0, numBytes);
 				encoded = true;
 				break;
