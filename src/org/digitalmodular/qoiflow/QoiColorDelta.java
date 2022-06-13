@@ -6,15 +6,15 @@ package org.digitalmodular.qoiflow;
  * @author Mark Jeronimus
  */
 // Created 2022-06-06
-public record QoiColorDelta(int deltaR,
-                            int deltaG,
-                            int deltaB,
-                            int deltaA) {
-	public QoiColorDelta(int deltaR, int deltaG, int deltaB, int deltaA) {
-		this.deltaR = (byte)deltaR;
-		this.deltaG = (byte)deltaG;
-		this.deltaB = (byte)deltaB;
-		this.deltaA = (byte)deltaA;
+public record QoiColorDelta(int dr,
+                            int dg,
+                            int db,
+                            int da) {
+	public QoiColorDelta(int dr, int dg, int db, int da) {
+		this.dr = (byte)dr;
+		this.dg = (byte)dg;
+		this.db = (byte)db;
+		this.da = (byte)da;
 	}
 
 	public static QoiColorDelta fromColors(QoiColor previous, QoiColor current) {
@@ -27,10 +27,10 @@ public record QoiColorDelta(int deltaR,
 	}
 
 	public QoiColor applyTo(QoiColor color) {
-		int r = color.r() + deltaR;
-		int g = color.g() + deltaG;
-		int b = color.b() + deltaB;
-		int a = color.a() + deltaA;
+		int r = color.r() + dr;
+		int g = color.g() + dg;
+		int b = color.b() + db;
+		int a = color.a() + da;
 
 		return new QoiColor(r, g, b, a);
 	}

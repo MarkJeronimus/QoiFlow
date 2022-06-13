@@ -21,7 +21,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 
 	@Override
 	public int encode(QoiPixelData pixel, byte[] dst) {
-		if ((bitsA == 0) && pixel.getDelta().deltaA() != 0) {
+		if ((bitsA == 0) && pixel.getDelta().da() != 0) {
 			return -1;
 		}
 

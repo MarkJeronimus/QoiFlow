@@ -24,27 +24,27 @@ public class QoiInstructionDelta extends QoiInstruction {
 	public int encode(QoiPixelData pixel, byte[] dst) {
 		QoiColorDelta delta = pixel.getDelta();
 
-		if ((bitsA == 0) && delta.deltaA() != 0) {
+		if ((bitsA == 0) && delta.da() != 0) {
 			return -1;
 		}
 
-		int r = (delta.deltaR() << shiftR) & maskR;
-		int g = (delta.deltaG() << shiftG) & maskG;
-		int b = (delta.deltaB() << shiftB) & maskB;
-		int a = delta.deltaA() & maskA;
+		int r = (delta.dr() << shiftR) & maskR;
+		int g = (delta.dg() << shiftG) & maskG;
+		int b = (delta.db() << shiftB) & maskB;
+		int a = delta.da() & maskA;
 
 
 		if (bitsA > 0) {
-		if ((r << (32 - numBits)) >> (32 - bitsR) != delta.deltaR() ||
-		    (g << (32 - shiftR)) >> (32 - bitsG) != delta.deltaG() ||
-		    (b << (32 - shiftG)) >> (32 - bitsB) != delta.deltaB() ||
-		    (a << (32 - shiftB)) >> (32 - bitsA) != delta.deltaA()) {
+		if ((r << (32 - numBits)) >> (32 - bitsR) != delta.dr() ||
+		    (g << (32 - shiftR)) >> (32 - bitsG) != delta.dg() ||
+		    (b << (32 - shiftG)) >> (32 - bitsB) != delta.db() ||
+		    (a << (32 - shiftB)) >> (32 - bitsA) != delta.da()) {
 			return -1;
 			}
 		} else {
-			if ((r << (32 - numBits)) >> (32 - bitsR) != delta.deltaR() ||
-			    (g << (32 - shiftR)) >> (32 - bitsG) != delta.deltaG() ||
-			    (b << (32 - shiftG)) >> (32 - bitsB) != delta.deltaB()) {
+			if ((r << (32 - numBits)) >> (32 - bitsR) != delta.dr() ||
+			    (g << (32 - shiftR)) >> (32 - bitsG) != delta.dg() ||
+			    (b << (32 - shiftG)) >> (32 - bitsB) != delta.db()) {
 				return -1;
 			}
 		}
