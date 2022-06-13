@@ -55,6 +55,11 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 			if (recentColorsList[i].equals(color)) {
 				recentColorFound = true;
 				dst[0] = (byte)(i + codeOffset);
+
+				if (statistics != null) {
+					statistics.record(this, dst, 0, 1, i);
+				}
+
 				return 1;
 			}
 		}

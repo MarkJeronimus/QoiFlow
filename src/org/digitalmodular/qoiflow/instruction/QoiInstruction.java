@@ -2,6 +2,7 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
+import org.digitalmodular.qoiflow.QOIEncoderStatistics;
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiFlowCodec;
 import org.digitalmodular.qoiflow.QoiPixelData;
@@ -35,6 +36,8 @@ public abstract class QoiInstruction {
 
 	protected int codeOffset          = 0;
 	protected int calculatedCodeCount = 1;
+
+	protected QOIEncoderStatistics statistics = null;
 
 	protected QoiInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
 		this.bitsR = requireRange(1, 8, bitsR, "bitsR");
@@ -105,6 +108,16 @@ public abstract class QoiInstruction {
 	 */
 	public int getCalculatedCodeCount() {
 		return calculatedCodeCount;
+	}
+
+	/**
+	 * Sets or clears the object to track statistics with.
+	 * <p>
+	 * Normally this should not be called by the user, as {@link QoiFlowCodec#setStatistics(QOIEncoderStatistics)}
+	 * should be called instead.
+	 */
+	public void setStatistics(QOIEncoderStatistics statistics) {
+		this.statistics = statistics;
 	}
 
 	/**

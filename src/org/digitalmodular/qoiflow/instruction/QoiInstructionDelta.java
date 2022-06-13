@@ -28,28 +28,31 @@ public class QoiInstructionDelta extends QoiInstruction {
 			return -1;
 		}
 
-		int r = (delta.dr() << shiftR) & maskR;
-		int g = (delta.dg() << shiftG) & maskG;
-		int b = (delta.db() << shiftB) & maskB;
-		int a = delta.da() & maskA;
+		int dr = (delta.dr() << shiftR) & maskR;
+		int dg = (delta.dg() << shiftG) & maskG;
+		int db = (delta.db() << shiftB) & maskB;
+		int da = delta.da() & maskA;
 
-
+		int recoveredDR = (dr << (32 - numBits)) >> (32 - bitsR);
+		int recoveredDG = (dg << (32 - shiftR)) >> (32 - bitsG);
+		int recoveredDB = (db << (32 - shiftG)) >> (32 - bitsB);
+		int recoveredDA = (da << (32 - shiftB)) >> (32 - bitsA);
 		if (bitsA > 0) {
-		if ((r << (32 - numBits)) >> (32 - bitsR) != delta.dr() ||
-		    (g << (32 - shiftR)) >> (32 - bitsG) != delta.dg() ||
-		    (b << (32 - shiftG)) >> (32 - bitsB) != delta.db() ||
-		    (a << (32 - shiftB)) >> (32 - bitsA) != delta.da()) {
-			return -1;
+			if (recoveredDR != delta.dr() ||
+			    recoveredDG != delta.dg() ||
+			    recoveredDB != delta.db() ||
+			    recoveredDA != delta.da()) {
+				return -1;
 			}
 		} else {
-			if ((r << (32 - numBits)) >> (32 - bitsR) != delta.dr() ||
-			    (g << (32 - shiftR)) >> (32 - bitsG) != delta.dg() ||
-			    (b << (32 - shiftG)) >> (32 - bitsB) != delta.db()) {
+			if (recoveredDR != delta.dr() ||
+			    recoveredDG != delta.dg() ||
+			    recoveredDB != delta.db()) {
 				return -1;
 			}
 		}
 
-		int rgba = r | g | b | a;
+		int rgba = dr | dg | db | da;
 
 		for (int i = 0; i < numBytes; i++) {
 			int shift = 8 * (numBytes - i - 1);
@@ -60,6 +63,14 @@ public class QoiInstructionDelta extends QoiInstruction {
 		}
 
 		dst[0] |= codeOffset;
+
+		if (statistics != null) {
+			if (bitsA > 0) {
+				statistics.record(this, dst, 0, numBytes, recoveredDR, recoveredDG, recoveredDB, recoveredDA);
+			} else {
+				statistics.record(this, dst, 0, numBytes, recoveredDR, recoveredDG, recoveredDB);
+			}
+		}
 
 		return numBytes;
 	}

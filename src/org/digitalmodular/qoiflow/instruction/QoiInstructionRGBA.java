@@ -32,17 +32,21 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		int b = ((color.b() << 24) >>> msbShiftB) & maskB;
 		int a = ((color.a() << 24) >>> msbShiftA) & maskA;
 
+		int recoveredR = r << msbShiftR >>> 24;
+		int recoveredG = g << msbShiftG >>> 24;
+		int recoveredB = b << msbShiftB >>> 24;
+		int recoveredA = a << msbShiftA >>> 24;
 		if (bitsA > 0) {
-		if (r << msbShiftR >>> 24 != color.r() ||
-		    g << msbShiftG >>> 24 != color.g() ||
-		    b << msbShiftB >>> 24 != color.b() ||
-		    a << msbShiftA >>> 24 != color.a()) {
-			return -1;
-		}
+			if (recoveredR != color.r() ||
+			    recoveredG != color.g() ||
+			    recoveredB != color.b() ||
+			    recoveredA != color.a()) {
+				return -1;
+			}
 		} else {
-			if (r << msbShiftR >>> 24 != color.r() ||
-			    g << msbShiftG >>> 24 != color.g() ||
-			    b << msbShiftB >>> 24 != color.b()) {
+			if (recoveredR != color.r() ||
+			    recoveredG != color.g() ||
+			    recoveredB != color.b()) {
 				return -1;
 			}
 		}
@@ -58,6 +62,14 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		}
 
 		dst[0] |= codeOffset;
+
+		if (statistics != null) {
+			if (bitsA > 0) {
+				statistics.record(this, dst, 0, numBytes, recoveredR, recoveredG, recoveredB, recoveredA);
+			} else {
+				statistics.record(this, dst, 0, numBytes, recoveredR, recoveredG, recoveredB);
+			}
+		}
 
 		return numBytes;
 	}

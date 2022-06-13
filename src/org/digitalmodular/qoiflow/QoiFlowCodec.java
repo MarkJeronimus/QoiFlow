@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
+import org.digitalmodular.util.HexUtilities;
 import static org.digitalmodular.util.Validators.requireRange;
 import static org.digitalmodular.util.Validators.requireSizeAtLeast;
 
@@ -156,13 +157,34 @@ public class QoiFlowCodec {
 			int codeOffset = instruction.getCodeOffset();
 			int numCodes   = instruction.getCalculatedCodeCount();
 			if (lastCodeOffset - 1 == codeOffset) {
-				System.out.println(instruction + ": " + codeOffset + " (" + numCodes + ')');
+				System.out.println(instruction + ": 0x" + HexUtilities.hexByteToString(codeOffset) +
+				                   " (" + numCodes + ')');
 			} else {
-				System.out.println(
-						instruction + ": " + (lastCodeOffset - 1) + ".." + codeOffset + " (" + numCodes + ')');
+				System.out.println(instruction + ": 0x" + HexUtilities.hexByteToString(codeOffset)
+				                   + "..0x" + HexUtilities.hexByteToString(lastCodeOffset - 1) + " (" + numCodes + ')');
 			}
 			lastCodeOffset = codeOffset;
 		}
+	}
+
+	/**
+	 * Sets or clears the object to track statistics with.
+	 * <p>
+	 * This method gives the statistics object to all instructions contained within this encoder,
+	 * by calling their {@link QoiInstruction#setStatistics(QOIEncoderStatistics)}.
+	 * <p>
+	 * Set to {@code null} to disable statistics.
+	 */
+	public void setStatistics(QOIEncoderStatistics statistics) {
+		int maxNameLength = 1;
+		for (QoiInstruction instruction : instructions) {
+			instruction.setStatistics(statistics);
+
+			maxNameLength = Math.max(maxNameLength, instruction.toString().length());
+		}
+
+		statistics.setMaxInstructionSize(maxInstructionSize);
+		statistics.setMaxNameLength(maxNameLength);
 	}
 
 	public void encode(QoiColor color, ByteBuffer dst) {
@@ -172,7 +194,6 @@ public class QoiFlowCodec {
 		mainEncode(pixel, dst);
 
 		previousColor = color;
-		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
 	}
 
 	/**
@@ -212,7 +233,5 @@ public class QoiFlowCodec {
 		for (QoiInstruction instruction : instructions) {
 			instruction.postEncode(dst);
 		}
-
-		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
 	}
 }

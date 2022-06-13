@@ -67,15 +67,22 @@ public class QoiInstructionRunLength extends QoiInstruction {
 		// variable-width encodings.
 
 		if (repeatCount > 1) {
-			repeatCount--;
+			int remainingValue = repeatCount - 1;
+			int len            = 0;
 
 			do {
-				int countMinusOne = repeatCount % calculatedCodeCount;
+				int countMinusOne = remainingValue % calculatedCodeCount;
 				int data          = codeOffset + countMinusOne;
 
 				dst.put((byte)data);
-				repeatCount = ((repeatCount - countMinusOne) / calculatedCodeCount) - 1;
-			} while (repeatCount >= 0);
+				len++;
+
+				remainingValue = ((remainingValue - countMinusOne) / calculatedCodeCount) - 1;
+			} while (remainingValue >= 0);
+
+			if (statistics != null) {
+				statistics.record(this, dst.array(), dst.position() - len, len, repeatCount);
+			}
 
 			repeatCount = 1;
 		}
