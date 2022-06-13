@@ -24,16 +24,29 @@ public class QoiInstructionDelta extends QoiInstruction {
 	public int encode(QoiPixelData pixel, byte[] dst) {
 		QoiColorDelta delta = pixel.getDelta();
 
+		if ((bitsA == 0) && delta.deltaA() != 0) {
+			return -1;
+		}
+
 		int r = (delta.deltaR() << shiftR) & maskR;
 		int g = (delta.deltaG() << shiftG) & maskG;
 		int b = (delta.deltaB() << shiftB) & maskB;
 		int a = delta.deltaA() & maskA;
 
+
+		if (bitsA > 0) {
 		if ((r << (32 - numBits)) >> (32 - bitsR) != delta.deltaR() ||
 		    (g << (32 - shiftR)) >> (32 - bitsG) != delta.deltaG() ||
 		    (b << (32 - shiftG)) >> (32 - bitsB) != delta.deltaB() ||
 		    (a << (32 - shiftB)) >> (32 - bitsA) != delta.deltaA()) {
 			return -1;
+			}
+		} else {
+			if ((r << (32 - numBits)) >> (32 - bitsR) != delta.deltaR() ||
+			    (g << (32 - shiftR)) >> (32 - bitsG) != delta.deltaG() ||
+			    (b << (32 - shiftG)) >> (32 - bitsB) != delta.deltaB()) {
+				return -1;
+			}
 		}
 
 		int rgba = r | g | b | a;

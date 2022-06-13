@@ -30,13 +30,10 @@ public class TestMain {
 
 		enc.reset();
 		enc.printCodeOffsets();
-		enc.encode(new QoiColor(0, 0, 0, 1), dst);
-		enc.encode(new QoiColor(0, 0, 1, 1), dst);
-		enc.encode(new QoiColor(0, 1, 1, 1), dst);
-		enc.encode(new QoiColor(1, 1, 1, 1), dst);
-		enc.encode(new QoiColor(1, 1, 1, 3), dst);
-		enc.encode(new QoiColor(1, 1, 3, 3), dst);
-		enc.encode(new QoiColor(1, 3, 3, 3), dst);
-		enc.encode(new QoiColor(3, 3, 3, 3), dst);
+		enc.encode(new QoiColor(9, 0, 0, 0), dst);
+		enc.encode(new QoiColor(9, 9, 1, 1), dst);
+		enc.encode(new QoiColor(9, 9, 9, 1), dst);
+		enc.encode(new QoiColor(0, 9, 9, 0), dst);
+		enc.encode(new QoiColor(0, 0, 9, 0), dst);
 	}
 }
