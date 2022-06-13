@@ -35,5 +35,9 @@ public class TestMain {
 		enc.encode(new QoiColor(9, 9, 9, 1), dst);
 		enc.encode(new QoiColor(0, 9, 9, 0), dst);
 		enc.encode(new QoiColor(0, 0, 9, 0), dst);
+		enc.encode(new QoiColor(0, 0, 9, 0), dst);
+		enc.encode(new QoiColor(0, 0, 9, 0), dst);
+
+		enc.finishEncoding(dst);
 	}
 }

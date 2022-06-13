@@ -199,4 +199,20 @@ public class QoiFlowCodec {
 
 		throw new AssertionError("None of the instructions could encode: " + pixel);
 	}
+
+	/**
+	 * Give instructions the opportunity to emit deferred data at the end of the stream.
+	 * <p>
+	 * This marks the end of an encoding cycle.
+	 * Continuing to use this encoder without first calling {@link #reset()} results in unspecified behavior.
+	 * <p>
+	 * This is required, for example, for RLE, to emit instructions when the counter is {@code > 1}.
+	 */
+	public void finishEncoding(ByteBuffer dst) {
+		for (QoiInstruction instruction : instructions) {
+			instruction.postEncode(dst);
+		}
+
+		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
+	}
 }

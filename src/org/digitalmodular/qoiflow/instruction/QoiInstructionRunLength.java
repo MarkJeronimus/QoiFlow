@@ -34,6 +34,23 @@ public class QoiInstructionRunLength extends QoiInstruction {
 
 	@Override
 	public void preEncode(QoiPixelData pixel, ByteBuffer dst) {
+		if (!pixel.getColor().equals(pixel.getPrevious())) {
+			postEncode(dst);
+		}
+	}
+
+	@Override
+	public int encode(QoiPixelData pixel, byte[] dst) {
+		if (pixel.getColor().equals(pixel.getPrevious())) {
+			repeatCount++;
+			return 0;
+		}
+
+		return -1;
+	}
+
+	@Override
+	public void postEncode(ByteBuffer dst) {
 		// Encode the value (minus 1) using bijective notation (rather than the more common positional notation).
 		// If there are 26 symbols to choose from, bijective notation is equal to spreadsheet column notation.
 		// if there are 10 symbols to choose from, the first few values are encoded as:
@@ -49,7 +66,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 		// entropy. This won't work in fixed-width encodings (which is most common in computers), but is perfect for
 		// variable-width encodings.
 
-		if (repeatCount > 1 && !pixel.getColor().equals(pixel.getPrevious())) {
+		if (repeatCount > 1) {
 			repeatCount--;
 
 			do {
@@ -62,16 +79,6 @@ public class QoiInstructionRunLength extends QoiInstruction {
 
 			repeatCount = 1;
 		}
-	}
-
-	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
-		if (pixel.getColor().equals(pixel.getPrevious())) {
-			repeatCount++;
-			return 0;
-		}
-
-		return -1;
 	}
 
 	@Override

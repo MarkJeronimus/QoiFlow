@@ -137,5 +137,18 @@ public abstract class QoiInstruction {
 	 */
 	public abstract int encode(QoiPixelData pixel, byte[] dst);
 
+	/**
+	 * Give the instruction the opportunity to emit deferred data at the end of the stream.
+	 * <p>
+	 * This marks the end of an encoding cycle.
+	 * Continuing to use this instance without first calling {@link #reset()} results in unspecified behavior.
+	 * <p>
+	 * This is required, for example, for RLE, to emit instructions when the counter is {@code > 1}.
+	 * <p>
+	 * Does nothing unless overridden.
+	 */
+	public void postEncode(ByteBuffer dst) {
+	}
+
 	public abstract void decode(ByteBuffer src, QoiColor color);
 }
