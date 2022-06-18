@@ -29,7 +29,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 
 	@Override
 	public void reset() {
-		repeatCount = 1;
+		repeatCount = 0;
 	}
 
 	@Override
