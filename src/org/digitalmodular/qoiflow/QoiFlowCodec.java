@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
@@ -33,32 +34,55 @@ public class QoiFlowCodec {
 	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
 
-		int maxInstructionSize      = 0;
-		int numVariableInstructions = 0;
-		int numFixedCodes           = 0;
+		maxInstructionSize = findMaxInstructionSize(instructions);
+		int numVariableInstructions = countNumVariableInstructions(instructions);
+		numFixedCodes = countNumFixedCodes(instructions, numVariableInstructions);
+
+		variableLengths = new int[numVariableInstructions - 1];
+		Arrays.fill(variableLengths, 1);
+
+		buffer = new byte[maxInstructionSize];
+	}
+
+	private static int findMaxInstructionSize(Iterable<QoiInstruction> instructions) {
+		int maxInstructionSize = 0;
+
 		for (QoiInstruction instruction : instructions) {
 			maxInstructionSize = Math.max(maxInstructionSize, instruction.getMaxSize());
+		}
 
+		return maxInstructionSize;
+	}
+
+	private static int countNumVariableInstructions(Iterable<QoiInstruction> instructions) {
+		int numVariableInstructions = 0;
+
+		for (QoiInstruction instruction : instructions) {
 			if (instruction.getNumCodes() == 0) {
 				numVariableInstructions++;
 			}
-
-			numFixedCodes += instruction.getNumCodes();
 		}
-
-		this.maxInstructionSize = maxInstructionSize;
-		buffer = new byte[maxInstructionSize];
 
 		if (numVariableInstructions == 0) {
 			throw new IllegalArgumentException("At least one variable-length instruction is required");
-		} else if (numFixedCodes + numVariableInstructions > 256) {
+		}
+
+		return numVariableInstructions;
+	}
+
+	private static int countNumFixedCodes(Iterable<QoiInstruction> instructions, int numVariableInstructions) {
+		int numFixedCodes = 0;
+
+		for (QoiInstruction instruction : instructions) {
+			numFixedCodes += instruction.getNumCodes();
+		}
+
+		if (numFixedCodes + numVariableInstructions > 256) {
 			throw new IllegalArgumentException(
 					"Code space overflow: " + (numFixedCodes + numVariableInstructions) + " > 256");
 		}
 
-		this.numFixedCodes = numFixedCodes;
-		variableLengths = new int[numVariableInstructions - 1];
-		Arrays.fill(variableLengths, 1);
+		return numFixedCodes;
 	}
 
 	public int getMaxInstructionSize() {
@@ -122,6 +146,10 @@ public class QoiFlowCodec {
 
 			return remaining;
 		}
+	}
+
+	public Collection<? extends QoiInstruction> instructions() {
+		return Collections.unmodifiableList(instructions);
 	}
 
 	public void reset() {
