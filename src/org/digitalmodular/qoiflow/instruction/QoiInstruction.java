@@ -88,6 +88,10 @@ public abstract class QoiInstruction {
 		return calculatedCodeCount;
 	}
 
+	public boolean hasAlpha() {
+		return bitsA > 0;
+	}
+
 	/**
 	 * Sets or clears the object to track statistics with.
 	 * <p>
