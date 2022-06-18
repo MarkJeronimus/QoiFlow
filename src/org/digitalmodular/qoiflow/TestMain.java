@@ -10,6 +10,7 @@ import org.digitalmodular.qoiflow.instruction.QoiInstructionColorHistory;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionMaskRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRunLength;
+import org.digitalmodular.util.HexUtilities;
 
 /**
  * @author Mark Jeronimus
@@ -36,6 +37,6 @@ public class TestMain {
 		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_3BYTE_BGR);
 		ByteBuffer    dst   = new ImageEncoder(codec).encode(image);
 
-		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
+		System.out.println(HexUtilities.hexArrayToString(dst.array(), dst.position(), 4, 8, 12, -5));
 	}
 }
