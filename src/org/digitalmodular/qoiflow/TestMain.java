@@ -1,5 +1,6 @@
 package org.digitalmodular.qoiflow;
 
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -26,27 +27,15 @@ public class TestMain {
 		QoiInstruction rgba24   = new QoiInstructionRGBA(8, 8, 8, 0);
 		QoiInstruction rgba32   = new QoiInstructionRGBA(8, 8, 8, 8);
 
-		QoiFlowCodec enc = new QoiFlowCodec(Arrays.asList(rle, hist, chroma6, chroma12, rgba12, maskRGB, maskRGBA));
-		enc.setVariableLength(0, 10);
+		QoiFlowCodec codec = new QoiFlowCodec(Arrays.asList(rle, hist, rgba32));
+		codec.setVariableLength(0, 10);
 
 		QOIEncoderStatistics statistics = new QOIEncoderStatistics();
-		enc.setStatistics(statistics);
+		codec.setStatistics(statistics);
 
-		ByteBuffer dst = ByteBuffer.allocate(100);
+		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_3BYTE_BGR);
+		ByteBuffer    dst   = new ImageEncoder(codec).encode(image);
 
-		enc.reset();
-		enc.printCodeOffsets();
-		enc.encode(new QoiColor(128, 128, 128, 255), dst);
-		enc.encode(new QoiColor(255, 128, 255, 255), dst);
-		enc.encode(new QoiColor(255, 255, 255, 128), dst);
-		enc.encode(new QoiColor(128, 128, 128, 128), dst);
-		enc.encode(new QoiColor(2, 2, 2, 0), dst);
-		enc.encode(new QoiColor(3, 2, 2, 0), dst);
-		enc.encode(new QoiColor(3, 3, 2, 0), dst);
-		enc.encode(new QoiColor(3, 3, 3, 0), dst);
-		enc.encode(new QoiColor(6, 4, 6, 0), dst);
-		enc.encode(new QoiColor(7, 5, 7, 0), dst);
-
-		enc.finishEncoding(dst);
+		System.out.println(Arrays.toString(Arrays.copyOf(dst.array(), dst.position())));
 	}
 }
