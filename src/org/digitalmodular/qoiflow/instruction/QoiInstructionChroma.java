@@ -103,7 +103,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 				dst[i] = 0;
 		}
 
-		dst[0] |= codeOffset;
+		dst[0] += codeOffset;
 
 		if (statistics != null) {
 			if (bitsA > 0) {
