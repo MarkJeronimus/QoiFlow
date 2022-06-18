@@ -11,10 +11,51 @@ import org.digitalmodular.qoiflow.QoiPixelData;
  */
 // Created 2022-06-14
 public class QoiInstructionChroma extends QoiInstruction {
+	/**
+	 * The amount to move the LSB bits from position 32 to the position in the datagram.
+	 * <p>
+	 * Examples for RGBA5654:
+	 * <pre>
+	 * shiftR = 15; // i.e. 0b00000000_00000000_00000000_00011111 -> 0b00000000_00001111_10000000_00000000
+	 * shiftG =  9; // i.e. 0b00000000_00000000_00000000_00111111 -> 0b00000000_00000000_01111110_00000000
+	 * shiftB =  4; // i.e. 0b00000000_00000000_00000000_00011111 -> 0b00000000_00000000_00000001_11110000
+	 * </pre>
+	 * Alternatively, think of this as the number of 0-bits to the right of the 1-bits in the corresponding mask.
+	 */
+	private final int shiftR;
+	private final int shiftG;
+	private final int shiftB;
+
+	/**
+	 * The occupied bits for each component in the datagram.
+	 * <p>
+	 * Examples for RGBA5654:
+	 * <pre>
+	 * maskR = 0b00000000_00001111_10000000_00000000;
+	 * maskG = 0b00000000_00000000_01111110_00000000;
+	 * maskB = 0b00000000_00000000_00000001_11110000;
+	 * maskA = 0b00000000_00000000_00000000_00001111;
+	 * </pre>
+	 * Alternatively, think of this as the number of 0-bits to the right of the 1-bits in the corresponding mask.
+	 */
+	private final int maskR;
+	private final int maskG;
+	private final int maskB;
+	private final int maskA;
+
 	private final int numBytes;
 
 	public QoiInstructionChroma(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
+
+		shiftB = bitsA;
+		shiftG = shiftB + bitsB;
+		shiftR = shiftG + bitsG;
+
+		maskR = (1 << numBits) - (1 << shiftR);
+		maskG = (1 << shiftR) - (1 << shiftG);
+		maskB = (1 << shiftG) - (1 << shiftB);
+		maskA = (1 << shiftB) - 1;
 
 		//noinspection OverridableMethodCallDuringObjectConstruction
 		numBytes = getMaxSize();

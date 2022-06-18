@@ -13,24 +13,15 @@ import static org.digitalmodular.util.Validators.requireRange;
  */
 // Created 2022-06-05
 public abstract class QoiInstruction {
+	/**
+	 * The number of bits to encode each component with.
+	 * <p>
+	 * Only bitsA may be 0.
+	 */
 	protected final int bitsR;
 	protected final int bitsG;
 	protected final int bitsB;
 	protected final int bitsA;
-
-	protected final int shiftR;
-	protected final int shiftG;
-	protected final int shiftB;
-
-	protected final int msbShiftR;
-	protected final int msbShiftG;
-	protected final int msbShiftB;
-	protected final int msbShiftA;
-
-	protected final int maskR;
-	protected final int maskG;
-	protected final int maskB;
-	protected final int maskA;
 
 	protected final int numBits;
 
@@ -45,20 +36,7 @@ public abstract class QoiInstruction {
 		this.bitsB = requireRange(1, 8, bitsB, "bitsB");
 		this.bitsA = requireRange(0, 8, bitsA, "bitsA");
 
-		shiftB = bitsA;
-		shiftG = shiftB + bitsB;
-		shiftR = shiftG + bitsG;
-		numBits = shiftR + bitsR;
-
-		msbShiftA = 32 - bitsA;
-		msbShiftB = msbShiftA - bitsB;
-		msbShiftG = msbShiftB - bitsG;
-		msbShiftR = msbShiftG - bitsR;
-
-		maskR = (1 << numBits) - (1 << shiftR);
-		maskG = (1 << shiftR) - (1 << shiftG);
-		maskB = (1 << shiftG) - (1 << shiftB);
-		maskA = (1 << shiftB) - 1;
+		numBits = bitsA + bitsB + bitsG + bitsR;
 	}
 
 	/**
