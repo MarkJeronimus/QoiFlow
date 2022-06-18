@@ -146,4 +146,15 @@ public abstract class QoiInstruction {
 	}
 
 	public abstract void decode(ByteBuffer src, QoiColor color);
+
+	/**
+	 * Clarifies whether this instruction must be capable of emitting identical bytes in sequence,
+	 * either in one pass, or in multiple passes.
+	 * <p>
+	 * For example, if we have the sequence {@code 0x80 0x80},
+	 * then this instruction can repeat bytes if either of these is true:
+	 * <ul><li>This sequence encodes two complete datagrams of this instruction</li>
+	 * <li>This sequence can be the start of a datagram, or the entire datagram, of this instruction</li></ul>
+	 */
+	public abstract boolean canRepeatBytes();
 }

@@ -120,6 +120,11 @@ public class QoiInstructionChroma extends QoiInstruction {
 	public void decode(ByteBuffer src, QoiColor color) {
 	}
 
+	@Override
+	public boolean canRepeatBytes() {
+		return true;
+	}
+
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
 	public String toString() {

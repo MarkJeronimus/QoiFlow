@@ -87,6 +87,11 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 	}
 
 	@Override
+	public boolean canRepeatBytes() {
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return "MASK";
 	}

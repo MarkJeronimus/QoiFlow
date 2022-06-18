@@ -93,6 +93,11 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	}
 
 	@Override
+	public boolean canRepeatBytes() {
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		//noinspection StringConcatenationMissingWhitespace
 		return "RLE" + calculatedCodeCount;

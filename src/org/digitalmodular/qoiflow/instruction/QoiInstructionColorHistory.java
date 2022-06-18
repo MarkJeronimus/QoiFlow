@@ -76,6 +76,11 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
+	public boolean canRepeatBytes() {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		//noinspection StringConcatenationMissingWhitespace
 		return "HIST" + calculatedCodeCount;

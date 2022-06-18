@@ -104,9 +104,11 @@ public class ImageEncoder {
 	}
 
 	private void writeFooter(ByteBuffer dst) {
-		int maxInstructionSize = codec.getMaxInstructionSize();
+		int  maxInstructionSize = codec.getMaxInstructionSize();
+		byte footerCode         = codec.getFooterCode();
+
 		for (int i = 0; i < maxInstructionSize; i++) {
-			dst.put((byte)0);
+			dst.put(footerCode);
 		}
 	}
 }

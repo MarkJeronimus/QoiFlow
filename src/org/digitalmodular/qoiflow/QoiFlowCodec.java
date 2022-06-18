@@ -25,8 +25,9 @@ public class QoiFlowCodec {
 	private final int                  numFixedCodes;
 	private final int[]                variableLengths;
 
-	// Codec state
+	// Codec state during encoding/decoding (prevent rapid allocation/de-allocation)
 	private QoiColor previousColor = START_COLOR;
+	private byte     footerCode    = 0;
 
 	// Temporary state (prevent rapid allocation/de-allocation)
 	private final byte[] buffer;
@@ -93,6 +94,10 @@ public class QoiFlowCodec {
 		return 256 - numFixedCodes;
 	}
 
+	public byte getFooterCode() {
+		return footerCode;
+	}
+
 	public int getNumVariableLengths() {
 		return variableLengths.length;
 	}
@@ -156,6 +161,7 @@ public class QoiFlowCodec {
 		prepareCodeOffsets();
 
 		previousColor = START_COLOR;
+		footerCode = findFooterCode(instructions);
 
 		for (QoiInstruction instruction : instructions) {
 			instruction.reset();
@@ -177,6 +183,16 @@ public class QoiFlowCodec {
 
 			instruction.setCodeOffsetAndCount(codeOffset, numCodes);
 		}
+	}
+
+	private static byte findFooterCode(Iterable<QoiInstruction> instructions) {
+		for (QoiInstruction instruction : instructions) {
+			if (!instruction.canRepeatBytes()) {
+				return (byte)instruction.getCodeOffset();
+			}
+		}
+
+		throw new IllegalArgumentException("At least one non-repeatable instruction is required");
 	}
 
 	public void printCodeOffsets() {
