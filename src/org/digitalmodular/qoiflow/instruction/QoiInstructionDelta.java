@@ -12,50 +12,51 @@ import org.digitalmodular.qoiflow.QoiPixelData;
 // Created 2022-06-12
 public class QoiInstructionDelta extends QoiInstruction {
 	/**
-	 * The amount to move the LSB bits from position 32 to the position in the datagram.
+	 * The amount to move the LSB bits from the original position to the left-most position.
 	 * <p>
 	 * Examples for RGBA5654:
 	 * <pre>
-	 * shiftR = 15; // i.e. 0b00000000_00000000_00000000_00011111 -> 0b00000000_00001111_10000000_00000000
-	 * shiftG =  9; // i.e. 0b00000000_00000000_00000000_00111111 -> 0b00000000_00000000_01111110_00000000
-	 * shiftB =  4; // i.e. 0b00000000_00000000_00000000_00011111 -> 0b00000000_00000000_00000001_11110000
+	 * msbShiftDR = 27; // i.e. 0b00000000000000000000000000011111 -> 0b11111000000000000000000000000000
+	 * msbShiftDG = 26; // i.e. 0b00000000000000000000000000111111 -> 0b11111100000000000000000000000000
+	 * msbShiftDB = 27; // i.e. 0b00000000000000000000000000011111 -> 0b11111000000000000000000000000000
+	 * msbShiftDA = 28; // i.e. 0b00000000000000000000000000001111 -> 0b11110000000000000000000000000000
 	 * </pre>
-	 * Alternatively, think of this as the number of 0-bits to the right of the 1-bits in the corresponding mask.
 	 */
-	private final int shiftR;
-	private final int shiftG;
-	private final int shiftB;
+	private final int msbShiftDR;
+	private final int msbShiftDG;
+	private final int msbShiftDB;
+	private final int msbShiftDA;
 
 	/**
-	 * The occupied bits for each component in the datagram.
+	 * The amount to move the LSB bits from the left-most position to the position in the datagram.
 	 * <p>
 	 * Examples for RGBA5654:
 	 * <pre>
-	 * maskR = 0b00000000_00001111_10000000_00000000;
-	 * maskG = 0b00000000_00000000_01111110_00000000;
-	 * maskB = 0b00000000_00000000_00000001_11110000;
-	 * maskA = 0b00000000_00000000_00000000_00001111;
+	 * dataShiftDR = 12; // i.e. 0b11111000000000000000000000000000 -> 0b00000000000011111000000000000000
+	 * dataShiftDG = 17; // i.e. 0b11111100000000000000000000000000 -> 0b00000000000000000111111000000000
+	 * dataShiftDB = 23; // i.e. 0b11111000000000000000000000000000 -> 0b00000000000000000000000111110000
+	 * dataShiftDA = 28; // i.e. 0b11110000000000000000000000000000 -> 0b00000000000000000000000000001111
 	 * </pre>
-	 * Alternatively, think of this as the number of 0-bits to the right of the 1-bits in the corresponding mask.
 	 */
-	private final int maskR;
-	private final int maskG;
-	private final int maskB;
-	private final int maskA;
+	private final int dataShiftDR;
+	private final int dataShiftDG;
+	private final int dataShiftDB;
+	private final int dataShiftDA;
 
 	private final int numBytes;
 
 	public QoiInstructionDelta(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
 
-		shiftB = bitsA;
-		shiftG = shiftB + bitsB;
-		shiftR = shiftG + bitsG;
+		msbShiftDR = 32 - bitsR;
+		msbShiftDG = 32 - bitsG;
+		msbShiftDB = 32 - bitsB;
+		msbShiftDA = 32 - bitsA;
 
-		maskR = (1 << numBits) - (1 << shiftR);
-		maskG = (1 << shiftR) - (1 << shiftG);
-		maskB = (1 << shiftG) - (1 << shiftB);
-		maskA = (1 << shiftB) - 1;
+		dataShiftDA = msbShiftDA;
+		dataShiftDB = dataShiftDA - bitsB;
+		dataShiftDG = dataShiftDB - bitsG;
+		dataShiftDR = dataShiftDG - bitsR;
 
 		//noinspection OverridableMethodCallDuringObjectConstruction
 		numBytes = getMaxSize();
@@ -69,15 +70,15 @@ public class QoiInstructionDelta extends QoiInstruction {
 			return -1;
 		}
 
-		int dr = (delta.dr() << shiftR) & maskR;
-		int dg = (delta.dg() << shiftG) & maskG;
-		int db = (delta.db() << shiftB) & maskB;
-		int da = delta.da() & maskA;
+		int dr = delta.dr() << msbShiftDR;
+		int dg = delta.dg() << msbShiftDG;
+		int db = delta.db() << msbShiftDB;
+		int da = delta.da() << msbShiftDA;
 
-		int recoveredDR = (dr << (32 - numBits)) >> (32 - bitsR);
-		int recoveredDG = (dg << (32 - shiftR)) >> (32 - bitsG);
-		int recoveredDB = (db << (32 - shiftG)) >> (32 - bitsB);
-		int recoveredDA = (da << (32 - shiftB)) >> (32 - bitsA);
+		int recoveredDR = (dr >> msbShiftDR);
+		int recoveredDG = (dg >> msbShiftDG);
+		int recoveredDB = (db >> msbShiftDB);
+		int recoveredDA = (da >> msbShiftDA);
 		if (bitsA > 0) {
 			if (recoveredDR != delta.dr() ||
 			    recoveredDG != delta.dg() ||
@@ -93,6 +94,10 @@ public class QoiInstructionDelta extends QoiInstruction {
 			}
 		}
 
+		dr >>>= dataShiftDR;
+		dg >>>= dataShiftDG;
+		db >>>= dataShiftDB;
+		da >>>= dataShiftDA;
 		int rgba = dr | dg | db | da;
 
 		for (int i = 0; i < numBytes; i++) {
