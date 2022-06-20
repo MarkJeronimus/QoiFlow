@@ -100,12 +100,15 @@ public class QoiInstructionChroma extends QoiInstruction {
 		da >>>= dataShiftDA;
 		int chromaRGBA = dy | cb | cr | da;
 
+		int shift = 8 * (numBytes - 1);
 		for (int i = 0; i < numBytes; i++) {
-			int shift = 8 * (numBytes - i - 1);
-			if (shift < 32)
+			if (shift < 32) {
 				dst[i] = (byte)(chromaRGBA >> shift);
-			else
+			} else {
 				dst[i] = 0;
+			}
+
+			shift -= 8;
 		}
 
 		dst[0] += codeOffset;
