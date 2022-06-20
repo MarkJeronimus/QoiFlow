@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiColorDelta;
+import org.digitalmodular.qoiflow.QoiColorRun;
 import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
@@ -106,7 +107,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 				dst[i] = (byte)(rgba >> shift);
 			} else {
 				dst[i] = 0;
-		}
+			}
 
 			shift -= 8;
 		}
@@ -125,7 +126,27 @@ public class QoiInstructionDelta extends QoiInstruction {
 	}
 
 	@Override
-	public void decode(ByteBuffer src, QoiColor color) {
+	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+		int rgba = code - codeOffset;
+
+		for (int i = 1; i < numBytes; i++) {
+			rgba = (rgba << 8) | (src.get() & 0xFF);
+		}
+
+		int dr = (rgba << dataShiftDR) >> msbShiftDR;
+		int dg = (rgba << dataShiftDG) >> msbShiftDG;
+		int db = (rgba << dataShiftDB) >> msbShiftDB;
+		int da = (rgba << dataShiftDA) >> msbShiftDA;
+
+		if (statistics != null) {
+			if (bitsA > 0) {
+				statistics.record(this, src, numBytes, dr, dg, db, da);
+			} else {
+				statistics.record(this, src, numBytes, dr, dg, db);
+			}
+		}
+
+		return new QoiColorRun(new QoiColorDelta(dr, dg, db, da).applyTo(lastColor), 1);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiColorRun;
 import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
@@ -16,7 +17,8 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	private QoiColor[] recentColorsList = new QoiColor[1];
 	private int        recentColorIndex = 0;
 
-	private boolean recentColorFound = false;
+	// Decoder state
+	private boolean pixelDecoded = false;
 
 	public QoiInstructionColorHistory() {
 		super(1, 1, 1, 0); // Bits are irrelevant
@@ -43,17 +45,15 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	public void reset() {
 		Arrays.fill(recentColorsList, INITIAL_COLOR);
 		recentColorIndex = 0;
-		recentColorFound = false;
+		pixelDecoded = false;
 	}
 
 	@Override
 	public int encode(QoiPixelData pixel, byte[] dst) {
 		QoiColor color = pixel.getColor();
 
-		recentColorFound = false;
 		for (int i = 0; i < recentColorsList.length; i++) {
 			if (recentColorsList[i].equals(color)) {
-				recentColorFound = true;
 				dst[0] = (byte)(codeOffset + i);
 
 				if (statistics != null) {
@@ -72,7 +72,33 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public void decode(ByteBuffer src, QoiColor color) {
+	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+		pixelDecoded = true;
+
+		int index = code - codeOffset;
+
+		if (statistics != null) {
+			statistics.record(this, src, 1, index);
+		}
+
+		return new QoiColorRun(recentColorsList[index], 1);
+	}
+
+	@Override
+	public void postDecode(QoiColor color) {
+		if (pixelDecoded) {
+			pixelDecoded = false;
+		} else {
+			for (QoiColor storedColor : recentColorsList) {
+				if (storedColor.equals(color)) {
+					return;
+				}
+			}
+
+			// Unknown colors get added.
+			recentColorsList[recentColorIndex] = color;
+			recentColorIndex = (recentColorIndex + 1) % recentColorsList.length;
+		}
 	}
 
 	@Override

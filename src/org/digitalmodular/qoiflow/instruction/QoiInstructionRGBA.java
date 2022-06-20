@@ -3,6 +3,7 @@ package org.digitalmodular.qoiflow.instruction;
 import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiColorRun;
 import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
@@ -119,7 +120,27 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public void decode(ByteBuffer src, QoiColor color) {
+	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+		int rgba = code - codeOffset;
+
+		for (int i = 1; i < numBytes; i++) {
+			rgba = (rgba << 8) | (src.get() & 0xFF);
+		}
+
+		int r = ((rgba & maskR) << shiftR) >>> 24;
+		int g = ((rgba & maskG) << shiftG) >>> 24;
+		int b = ((rgba & maskB) << shiftB) >>> 24;
+		int a = ((rgba & maskA) << shiftA) >>> 24;
+
+		if (statistics != null) {
+			if (bitsA > 0) {
+				statistics.record(this, src, numBytes, r, g, b, a);
+			} else {
+				statistics.record(this, src, numBytes, r, g, b);
+			}
+		}
+
+		return new QoiColorRun(new QoiColor(r, g, b, a), 1);
 	}
 
 	@Override

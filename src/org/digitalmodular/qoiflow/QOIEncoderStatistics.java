@@ -1,5 +1,7 @@
 package org.digitalmodular.qoiflow;
 
+import java.nio.ByteBuffer;
+
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
 import org.digitalmodular.util.HexUtilities;
 import static org.digitalmodular.util.Validators.requireAtLeast;
@@ -19,6 +21,10 @@ public class QOIEncoderStatistics {
 
 	public void setMaxNameLength(int maxNameLength) {
 		this.maxNameLength = requireAtLeast(1, maxNameLength, "maxNameLength");
+	}
+
+	public void record(QoiInstruction instruction, ByteBuffer src, int len, int... parameters) {
+		record(instruction, src.array(), src.position() - len, len, parameters);
 	}
 
 	public void record(QoiInstruction instruction, byte[] dst, int start, int len, int... parameters) {
@@ -91,7 +97,7 @@ public class QOIEncoderStatistics {
 			}
 
 			String s = Integer.toString(parameters[i]);
-			sb.append(" ".repeat(4 - s.length())).append(s);
+			sb.append(" ".repeat(Math.max(0, 4 - s.length()))).append(s);
 		}
 	}
 }

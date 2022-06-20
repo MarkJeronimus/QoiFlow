@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QOIEncoderStatistics;
 import org.digitalmodular.qoiflow.QoiColor;
+import org.digitalmodular.qoiflow.QoiColorRun;
 import org.digitalmodular.qoiflow.QoiFlowCodec;
 import org.digitalmodular.qoiflow.QoiPixelData;
 import static org.digitalmodular.util.Validators.requireRange;
@@ -145,7 +146,25 @@ public abstract class QoiInstruction {
 	public void postEncode(ByteBuffer dst) {
 	}
 
-	public abstract void decode(ByteBuffer src, QoiColor color);
+	/**
+	 * Decodes the pixel .
+	 * <p>
+	 * The first instruction that can encode the pixel will end the encoding phase.
+	 *
+	 * @return The amount of bytes this instruction stored in {@code dst} encode the color,
+	 * or -1 if it could not encode.
+	 */
+	public abstract QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor);
+
+	/**
+	 * Give the instruction the opportunity to update it's internal state depending on the decoded color.
+	 * <p>
+	 * This is required, for example, for Color History, to record a color not decoded by itself.
+	 * <p>
+	 * Does nothing unless overridden.
+	 */
+	public void postDecode(QoiColor color) {
+	}
 
 	/**
 	 * Clarifies whether this instruction must be capable of emitting identical bytes in sequence,

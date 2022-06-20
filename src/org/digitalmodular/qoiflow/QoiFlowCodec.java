@@ -278,4 +278,25 @@ public class QoiFlowCodec {
 			instruction.postEncode(dst);
 		}
 	}
+
+	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+		for (QoiInstruction instruction : instructions) {
+			if (code >= instruction.getCodeOffset()) {
+				return instruction.decode(code, src, lastColor);
+			}
+		}
+
+		throw new AssertionError("None of the instructions could decode: " + HexUtilities.hexByteToString(code));
+	}
+
+	/**
+	 * Give instructions the opportunity to update their internal state depending on the decoded color.
+	 * <p>
+	 * This is required, for example, for Color History, to record a color not decoded by itself.
+	 */
+	public void postDecode(QoiColor color) {
+		for (QoiInstruction instruction : instructions) {
+			instruction.postDecode(color);
+		}
+	}
 }

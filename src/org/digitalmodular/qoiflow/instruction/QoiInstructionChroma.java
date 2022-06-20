@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiColorChroma;
+import org.digitalmodular.qoiflow.QoiColorRun;
 import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
@@ -125,7 +126,8 @@ public class QoiInstructionChroma extends QoiInstruction {
 	}
 
 	@Override
-	public void decode(ByteBuffer src, QoiColor color) {
+	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
