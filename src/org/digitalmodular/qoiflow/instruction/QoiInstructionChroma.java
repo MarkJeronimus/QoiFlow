@@ -127,7 +127,26 @@ public class QoiInstructionChroma extends QoiInstruction {
 
 	@Override
 	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
-		throw new UnsupportedOperationException("TODO");
+		int rgba = code - codeOffset;
+
+		for (int i = 1; i < numBytes; i++) {
+			rgba = (rgba << 8) | (src.get() & 0xFF);
+		}
+
+		int dy = (rgba << dataShiftDY) >> msbShiftDY;
+		int cb = (rgba << dataShiftCB) >> msbShiftCB;
+		int cr = (rgba << dataShiftCR) >> msbShiftCR;
+		int da = (rgba << dataShiftDA) >> msbShiftDA;
+
+		if (statistics != null) {
+			if (bitsA > 0) {
+				statistics.record(this, src, numBytes, dy, cb, cr, da);
+			} else {
+				statistics.record(this, src, numBytes, dy, cb, cr);
+			}
+		}
+
+		return new QoiColorRun(new QoiColorChroma(dy, cb, cr, da).applyTo(lastColor), 1);
 	}
 
 	@Override

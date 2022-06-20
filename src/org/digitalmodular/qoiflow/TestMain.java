@@ -32,7 +32,7 @@ public class TestMain {
 		QoiInstruction rgba24   = new QoiInstructionRGBA(8, 8, 8, 0);
 		QoiInstruction rgba32   = new QoiInstructionRGBA(8, 8, 8, 8);
 
-		QoiFlowCodec codec = new QoiFlowCodec(Arrays.asList(rle, hist, delta6, delta8, rgba24, rgba32));
+		QoiFlowCodec codec = new QoiFlowCodec(Arrays.asList(rle, hist, chroma6, chroma8, maskRGB, maskRGBA));
 		codec.setVariableLength(0, 10);
 
 		QOIEncoderStatistics statistics = new QOIEncoderStatistics();
@@ -45,36 +45,36 @@ public class TestMain {
 		p = addPixel(pixels, new QoiColor(255, 128, 255, 255), p);
 		p = addPixel(pixels, new QoiColor(255, 255, 255, 128), p);
 		p = addPixel(pixels, new QoiColor(128, 128, 128, 128), p);
-		p = addPixel(pixels, new QoiColor(8, 8, 8, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(8, 8, 9, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(8, 8, 7, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(8, 9, 7, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(8, 7, 7, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(9, 7, 7, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 7, 7, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 7, 7, 9), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 7, 7, 7), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 7, 8, 8), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 7, 6, 6), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 8, 6, 7), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(7, 6, 6, 5), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(8, 6, 6, 6), p); // Test Delta
-		p = addPixel(pixels, new QoiColor(6, 6, 6, 4), p); // Test Delta
-//		p = addPixel(pixels, new QoiColor(8, 8, 8, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(9, 8, 8, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(7, 8, 8, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(7, 8, 9, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(7, 8, 7, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(8, 9, 8, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(6, 7, 6, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(6, 7, 6, 9), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(6, 7, 6, 7), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(7, 7, 6, 8), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(5, 7, 6, 6), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(5, 7, 7, 7), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(5, 7, 5, 5), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(6, 8, 6, 6), p); // Test Chroma
-//		p = addPixel(pixels, new QoiColor(4, 6, 4, 4), p); // Test Chroma
+//		p = addPixel(pixels, new QoiColor(8, 8, 8, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(8, 8, 9, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(8, 8, 7, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(8, 9, 7, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(8, 7, 7, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(9, 7, 7, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 7, 7, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 7, 7, 9), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 7, 7, 7), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 7, 8, 8), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 7, 6, 6), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 8, 6, 7), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(7, 6, 6, 5), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(8, 6, 6, 6), p); // Test Delta
+//		p = addPixel(pixels, new QoiColor(6, 6, 6, 4), p); // Test Delta
+		p = addPixel(pixels, new QoiColor(8, 8, 8, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(9, 8, 8, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(7, 8, 8, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(7, 8, 9, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(7, 8, 7, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(8, 9, 8, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(6, 7, 6, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(6, 7, 6, 9), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(6, 7, 6, 7), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(7, 7, 6, 8), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(5, 7, 6, 6), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(5, 7, 7, 7), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(5, 7, 5, 5), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(6, 8, 6, 6), p); // Test Chroma
+		p = addPixel(pixels, new QoiColor(4, 6, 4, 4), p); // Test Chroma
 
 		ByteBuffer dst = new ImageEncoder(codec).encode(image);
 

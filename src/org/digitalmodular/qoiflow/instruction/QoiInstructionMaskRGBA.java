@@ -85,7 +85,45 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 
 	@Override
 	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
-		throw new UnsupportedOperationException("TODO");
+		int mask;
+		if (bitsA > 0) {
+			mask = (code - codeOffset) & 0b1111;
+		} else {
+			mask = ((code - codeOffset) & 0b111) << 1;
+		}
+
+		int r;
+		int g;
+		int b;
+		int a;
+
+		if ((mask & 0b1000) != 0) {
+			r = src.get() & 0xFF;
+		} else {
+			r = lastColor.r();
+		}
+		if ((mask & 0b0100) != 0) {
+			g = src.get() & 0xFF;
+		} else {
+			g = lastColor.g();
+		}
+		if ((mask & 0b0010) != 0) {
+			b = src.get() & 0xFF;
+		} else {
+			b = lastColor.b();
+		}
+		if ((mask & 0b0001) != 0) {
+			a = src.get() & 0xFF;
+		} else {
+			a = lastColor.a();
+		}
+
+		if (statistics != null) {
+			int numBytes = Integer.bitCount(mask) + 1;
+			logStatistics(src, mask, numBytes);
+		}
+
+		return new QoiColorRun(new QoiColor(r, g, b, a), 1);
 	}
 
 	@Override
@@ -98,20 +136,53 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 		return "MASK";
 	}
 
+	private void logStatistics(ByteBuffer src, int mask, int numBytes) {
+		logStatistics(src.array(), mask, src.position() - numBytes, numBytes);
+	}
+
 	private void logStatistics(byte[] dst, int mask, int numBytes) {
+		logStatistics(dst, mask, 0, numBytes);
+	}
+
+	private void logStatistics(byte[] dst, int mask, int start, int numBytes) {
 		switch (numBytes) {
 			case 2:
-				statistics.recordMask(this, dst, 0, 2, mask, dst[1] & 0xFF);
+				statistics.recordMask(this,
+				                      dst,
+				                      start,
+				                      2,
+				                      mask,
+				                      dst[start + 1] & 0xFF);
 				break;
 			case 3:
-				statistics.recordMask(this, dst, 0, 3, mask, dst[1] & 0xFF, dst[2] & 0xFF);
+				statistics.recordMask(this,
+				                      dst,
+				                      start,
+				                      3,
+				                      mask,
+				                      dst[start + 1] & 0xFF,
+				                      dst[start + 2] & 0xFF);
 				break;
 			case 4:
-				statistics.recordMask(this, dst, 0, 4, mask, dst[1] & 0xFF, dst[2] & 0xFF, dst[3] & 0xFF);
+				statistics.recordMask(this,
+				                      dst,
+				                      start,
+				                      4,
+				                      mask,
+				                      dst[start + 1] & 0xFF,
+				                      dst[start + 2] & 0xFF,
+				                      dst[start + 3] & 0xFF);
 				break;
 			case 5:
-				statistics.recordMask(
-						this, dst, 0, 5, mask, dst[1] & 0xFF, dst[2] & 0xFF, dst[3] & 0xFF, dst[4] & 0xFF);
+				statistics.recordMask(this,
+				                      dst,
+				                      start,
+				                      5,
+				                      mask,
+				                      dst[start + 1] & 0xFF,
+				                      dst[start + 2] & 0xFF,
+				                      dst[start + 3] & 0xFF,
+				                      dst[start + 4] & 0xFF);
 				break;
 			default:
 				throw new AssertionError("Invalid numBytes: " + numBytes);
