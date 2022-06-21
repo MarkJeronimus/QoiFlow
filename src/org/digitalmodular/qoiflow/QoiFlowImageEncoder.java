@@ -1,14 +1,11 @@
 package org.digitalmodular.qoiflow;
 
 import java.awt.AlphaComposite;
-import java.awt.Composite;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -73,7 +70,7 @@ public class QoiFlowImageEncoder {
 		Graphics2D g = convertedImage.createGraphics();
 		try {
 			g.setComposite(AlphaComposite.Src);
-			g.drawImage(image,0,0,null);
+			g.drawImage(image, 0, 0, null);
 		} finally {
 			g.dispose();
 		}
