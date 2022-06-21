@@ -103,6 +103,10 @@ public abstract class QoiInstruction {
 		this.statistics = statistics;
 	}
 
+	public QOIEncoderStatistics getStatistics() {
+		return statistics;
+	}
+
 	/**
 	 * Resets internal state of the encoder/decoder.
 	 * <p>

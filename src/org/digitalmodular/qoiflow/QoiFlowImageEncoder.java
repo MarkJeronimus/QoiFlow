@@ -43,7 +43,10 @@ public class QoiFlowImageEncoder {
 		ByteBuffer dst = ByteBuffer.allocate(HEADER_LENGTH + width * height * codec.getMaxInstructionSize());
 
 		codec.reset();
-		codec.printCodeOffsets();
+
+		if (codec.getStatistics() != null) {
+			codec.printCodeOffsets();
+		}
 
 		writeHeader(width, height, dst);
 		encodeImage(image, dst);

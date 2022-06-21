@@ -25,7 +25,10 @@ public class QoiFlowImageDecoder {
 		readHeader(src);
 
 		codec.reset();
-		codec.printCodeOffsets();
+
+		if (codec.getStatistics() != null) {
+			codec.printCodeOffsets();
+		}
 
 		BufferedImage image  = createImage(width, height);
 		byte[]        pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();

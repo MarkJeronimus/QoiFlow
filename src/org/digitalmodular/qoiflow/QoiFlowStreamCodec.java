@@ -231,6 +231,10 @@ public class QoiFlowStreamCodec {
 		statistics.setMaxNameLength(maxNameLength);
 	}
 
+	public QOIEncoderStatistics getStatistics() {
+		return instructions.get(0).getStatistics();
+	}
+
 	public void encode(QoiColor color, ByteBuffer dst) {
 		QoiPixelData pixel = new QoiPixelData(previousColor, color);
 
