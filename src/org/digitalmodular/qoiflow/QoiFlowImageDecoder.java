@@ -80,6 +80,10 @@ public class QoiFlowImageDecoder {
 			lastColor = colorRun.color();
 			int count = colorRun.count();
 
+			if (count * 4 > pixels.length - p) {
+				count = (pixels.length - p) / 4;
+			}
+
 			p = setRGBA(lastColor, count, pixels, p);
 
 			if (p == pixels.length || src.remaining() < codec.getMaxInstructionSize()) {
