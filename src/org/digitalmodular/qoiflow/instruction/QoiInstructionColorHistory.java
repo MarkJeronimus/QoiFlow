@@ -17,6 +17,9 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	private QoiColor[] recentColorsList = new QoiColor[1];
 	private int        recentColorIndex = 0;
 
+	// Encoder state
+	private QoiColor lastColor = null;
+
 	// Decoder state
 	private boolean pixelDecoded = false;
 
@@ -45,12 +48,20 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	public void reset() {
 		Arrays.fill(recentColorsList, INITIAL_COLOR);
 		recentColorIndex = 0;
+		lastColor = null;
 		pixelDecoded = false;
 	}
 
 	@Override
 	public int encode(QoiPixelData pixel, byte[] dst) {
 		QoiColor color = pixel.getColor();
+
+		boolean repeatColor = color.equals(lastColor);
+		lastColor = null;
+
+		if (repeatColor) {
+			return -1;
+		}
 
 		for (int i = 0; i < recentColorsList.length; i++) {
 			if (recentColorsList[i].equals(color)) {
@@ -60,6 +71,7 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 					statistics.record(this, dst, 0, 1, i);
 				}
 
+				lastColor = color;
 				return 1;
 			}
 		}
