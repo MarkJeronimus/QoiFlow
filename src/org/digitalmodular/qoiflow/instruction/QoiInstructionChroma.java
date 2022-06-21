@@ -116,9 +116,10 @@ public class QoiInstructionChroma extends QoiInstruction {
 
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, dst, 0, numBytes, recoveredDY, recoveredCB, recoveredCR, recoveredDA);
+				statistics.record(
+						this, dst, 0, numBytes, pixel.getColor(), recoveredDY, recoveredCB, recoveredCR, recoveredDA);
 			} else {
-				statistics.record(this, dst, 0, numBytes, recoveredDY, recoveredCB, recoveredCR);
+				statistics.record(this, dst, 0, numBytes, pixel.getColor(), recoveredDY, recoveredCB, recoveredCR);
 			}
 		}
 
@@ -138,15 +139,17 @@ public class QoiInstructionChroma extends QoiInstruction {
 		int cr = (rgba << dataShiftCR) >> msbShiftCR;
 		int da = (rgba << dataShiftDA) >> msbShiftDA;
 
+		QoiColor color = new QoiColorChroma(dy, cb, cr, da).applyTo(lastColor);
+
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, src, numBytes, dy, cb, cr, da);
+				statistics.record(this, src, numBytes, color, dy, cb, cr, da);
 			} else {
-				statistics.record(this, src, numBytes, dy, cb, cr);
+				statistics.record(this, src, numBytes, color, dy, cb, cr);
 			}
 		}
 
-		return new QoiColorRun(new QoiColorChroma(dy, cb, cr, da).applyTo(lastColor), 1);
+		return new QoiColorRun(color, 1);
 	}
 
 	@Override

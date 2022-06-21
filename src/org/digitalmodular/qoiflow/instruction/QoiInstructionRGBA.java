@@ -110,9 +110,9 @@ public class QoiInstructionRGBA extends QoiInstruction {
 
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, dst, 0, numBytes, recoveredR, recoveredG, recoveredB, recoveredA);
+				statistics.record(this, dst, 0, numBytes, color, recoveredR, recoveredG, recoveredB, recoveredA);
 			} else {
-				statistics.record(this, dst, 0, numBytes, recoveredR, recoveredG, recoveredB);
+				statistics.record(this, dst, 0, numBytes, color, recoveredR, recoveredG, recoveredB);
 			}
 		}
 
@@ -132,15 +132,17 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		int b = ((rgba & maskB) << shiftB) >>> 24;
 		int a = ((rgba & maskA) << shiftA) >>> 24;
 
+		QoiColor color = new QoiColor(r, g, b, a);
+
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, src, numBytes, r, g, b, a);
+				statistics.record(this, src, numBytes, color, r, g, b, a);
 			} else {
-				statistics.record(this, src, numBytes, r, g, b);
+				statistics.record(this, src, numBytes, color, r, g, b);
 			}
 		}
 
-		return new QoiColorRun(new QoiColor(r, g, b, a), 1);
+		return new QoiColorRun(color, 1);
 	}
 
 	@Override

@@ -89,7 +89,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 			} while (remainingValue >= 0);
 
 			if (statistics != null) {
-				statistics.record(this, dst.array(), dst.position() - len, len, repeatCount);
+				statistics.record(this, dst.array(), dst.position() - len, len, lastColor, repeatCount);
 			}
 
 			repeatCount = 1;
@@ -102,7 +102,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 		repeatMultiplier *= calculatedCodeCount;
 
 		if (statistics != null) {
-			statistics.record(this, src, 1, repeatCount);
+			statistics.record(this, src, 1, lastColor, repeatCount);
 		}
 
 		return new QoiColorRun(lastColor, repeatCount);

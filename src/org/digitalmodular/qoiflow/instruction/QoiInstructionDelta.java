@@ -116,9 +116,10 @@ public class QoiInstructionDelta extends QoiInstruction {
 
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, dst, 0, numBytes, recoveredDR, recoveredDG, recoveredDB, recoveredDA);
+				statistics.record(
+						this, dst, 0, numBytes, pixel.getColor(), recoveredDR, recoveredDG, recoveredDB, recoveredDA);
 			} else {
-				statistics.record(this, dst, 0, numBytes, recoveredDR, recoveredDG, recoveredDB);
+				statistics.record(this, dst, 0, numBytes, pixel.getColor(), recoveredDR, recoveredDG, recoveredDB);
 			}
 		}
 
@@ -138,15 +139,17 @@ public class QoiInstructionDelta extends QoiInstruction {
 		int db = (rgba << dataShiftDB) >> msbShiftDB;
 		int da = (rgba << dataShiftDA) >> msbShiftDA;
 
+		QoiColor color = new QoiColorDelta(dr, dg, db, da).applyTo(lastColor);
+
 		if (statistics != null) {
 			if (bitsA > 0) {
-				statistics.record(this, src, numBytes, dr, dg, db, da);
+				statistics.record(this, src, numBytes, color, dr, dg, db, da);
 			} else {
-				statistics.record(this, src, numBytes, dr, dg, db);
+				statistics.record(this, src, numBytes, color, dr, dg, db);
 			}
 		}
 
-		return new QoiColorRun(new QoiColorDelta(dr, dg, db, da).applyTo(lastColor), 1);
+		return new QoiColorRun(color, 1);
 	}
 
 	@Override

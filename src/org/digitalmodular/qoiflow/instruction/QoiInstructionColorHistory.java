@@ -68,7 +68,7 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 				dst[0] = (byte)(codeOffset + i);
 
 				if (statistics != null) {
-					statistics.record(this, dst, 0, 1, i);
+					statistics.record(this, dst, 0, 1, color, i);
 				}
 
 				lastColor = color;
@@ -87,13 +87,14 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
 		pixelDecoded = true;
 
-		int index = code - codeOffset;
+		int      index = code - codeOffset;
+		QoiColor color = recentColorsList[index];
 
 		if (statistics != null) {
-			statistics.record(this, src, 1, index);
+			statistics.record(this, src, 1, color, index);
 		}
 
-		return new QoiColorRun(recentColorsList[index], 1);
+		return new QoiColorRun(color, 1);
 	}
 
 	@Override

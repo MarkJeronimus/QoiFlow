@@ -23,11 +23,11 @@ public class QOIEncoderStatistics {
 		this.maxNameLength = requireAtLeast(1, maxNameLength, "maxNameLength");
 	}
 
-	public void record(QoiInstruction instruction, ByteBuffer src, int len, int... parameters) {
-		record(instruction, src.array(), src.position() - len, len, parameters);
+	public void record(QoiInstruction instruction, ByteBuffer src, int len, QoiColor color, int... parameters) {
+		record(instruction, src.array(), src.position() - len, len, color, parameters);
 	}
 
-	public void record(QoiInstruction instruction, byte[] dst, int start, int len, int... parameters) {
+	public void record(QoiInstruction instruction, byte[] dst, int start, int len, QoiColor color, int... parameters) {
 		if (maxInstructionSize == 0)
 			throw new IllegalStateException("maxInstructionSize has not been set yet!");
 		if (maxNameLength == 0)
@@ -39,12 +39,15 @@ public class QOIEncoderStatistics {
 		appendName(sb, instruction);
 		sb.append('(');
 		appendParameters(sb, parameters);
-		sb.append(')');
+		appendTabs(sb, maxInstructionSize - parameters.length);
+		sb.append(") = ");
+		appendColor(sb, color);
 
 		System.out.println(sb);
 	}
 
-	public void recordMask(QoiInstruction instruction, byte[] dst, int start, int len, int mask, int... parameters) {
+	public void recordMask(
+			QoiInstruction instruction, byte[] dst, int start, int len, int mask, QoiColor color, int... parameters) {
 		if (maxInstructionSize == 0)
 			throw new IllegalStateException("maxInstructionSize has not been set yet!");
 		if (maxNameLength == 0)
@@ -58,7 +61,9 @@ public class QOIEncoderStatistics {
 		appendMask(sb, mask, instruction.hasAlpha());
 		sb.append(", ");
 		appendParameters(sb, parameters);
-		sb.append(')');
+		appendTabs(sb, maxInstructionSize - parameters.length - 1);
+		sb.append(") = ");
+		appendColor(sb, color);
 
 		System.out.println(sb);
 	}
@@ -99,5 +104,13 @@ public class QOIEncoderStatistics {
 			String s = Integer.toString(parameters[i]);
 			sb.append(" ".repeat(Math.max(0, 4 - s.length()))).append(s);
 		}
+	}
+
+	private static void appendTabs(StringBuilder sb, int n) {
+		sb.append("      ".repeat(Math.max(0, n)));
+	}
+
+	private static void appendColor(StringBuilder sb, QoiColor color) {
+		sb.append(String.format("QoiCOLOR(%3d, %3d, %3d, %3d)", color.r(), color.g(), color.b(), color.a()));
 	}
 }

@@ -77,7 +77,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 		}
 
 		if (statistics != null) {
-			logStatistics(dst, mask, numBytes);
+			logStatistics(dst, mask, numBytes, color);
 		}
 
 		return numBytes;
@@ -118,12 +118,14 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 			a = lastColor.a();
 		}
 
+		QoiColor color = new QoiColor(r, g, b, a);
+
 		if (statistics != null) {
 			int numBytes = Integer.bitCount(mask) + 1;
-			logStatistics(src, mask, numBytes);
+			logStatistics(src, mask, numBytes, color);
 		}
 
-		return new QoiColorRun(new QoiColor(r, g, b, a), 1);
+		return new QoiColorRun(color, 1);
 	}
 
 	@Override
@@ -136,15 +138,15 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 		return "MASK";
 	}
 
-	private void logStatistics(ByteBuffer src, int mask, int numBytes) {
-		logStatistics(src.array(), mask, src.position() - numBytes, numBytes);
+	private void logStatistics(ByteBuffer src, int mask, int numBytes, QoiColor color) {
+		logStatistics(src.array(), mask, src.position() - numBytes, numBytes, color);
 	}
 
-	private void logStatistics(byte[] dst, int mask, int numBytes) {
-		logStatistics(dst, mask, 0, numBytes);
+	private void logStatistics(byte[] dst, int mask, int numBytes, QoiColor color) {
+		logStatistics(dst, mask, 0, numBytes, color);
 	}
 
-	private void logStatistics(byte[] dst, int mask, int start, int numBytes) {
+	private void logStatistics(byte[] dst, int mask, int start, int numBytes, QoiColor color) {
 		switch (numBytes) {
 			case 2:
 				statistics.recordMask(this,
@@ -152,6 +154,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 				                      start,
 				                      2,
 				                      mask,
+				                      color,
 				                      dst[start + 1] & 0xFF);
 				break;
 			case 3:
@@ -160,6 +163,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 				                      start,
 				                      3,
 				                      mask,
+				                      color,
 				                      dst[start + 1] & 0xFF,
 				                      dst[start + 2] & 0xFF);
 				break;
@@ -169,6 +173,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 				                      start,
 				                      4,
 				                      mask,
+				                      color,
 				                      dst[start + 1] & 0xFF,
 				                      dst[start + 2] & 0xFF,
 				                      dst[start + 3] & 0xFF);
@@ -179,6 +184,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 				                      start,
 				                      5,
 				                      mask,
+				                      color,
 				                      dst[start + 1] & 0xFF,
 				                      dst[start + 2] & 0xFF,
 				                      dst[start + 3] & 0xFF,
