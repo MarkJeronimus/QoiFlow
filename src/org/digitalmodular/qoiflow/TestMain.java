@@ -32,7 +32,8 @@ public class TestMain {
 		QoiInstruction rgba24   = new QoiInstructionRGBA(8, 8, 8, 0);
 		QoiInstruction rgba32   = new QoiInstructionRGBA(8, 8, 8, 8);
 
-		QoiFlowCodec codec = new QoiFlowCodec(Arrays.asList(rle, hist, chroma6, chroma8, maskRGB, maskRGBA));
+		QoiFlowStreamCodec codec = new QoiFlowStreamCodec(Arrays.asList(
+				rle, hist, chroma6, chroma8, maskRGB, maskRGBA));
 		codec.setVariableLength(0, 10);
 
 		QOIEncoderStatistics statistics = new QOIEncoderStatistics();
@@ -76,12 +77,12 @@ public class TestMain {
 		p = addPixel(pixels, new QoiColor(6, 8, 6, 6), p); // Test Chroma
 		p = addPixel(pixels, new QoiColor(4, 6, 4, 4), p); // Test Chroma
 
-		ByteBuffer dst = new ImageEncoder(codec).encode(image);
+		ByteBuffer dst = new QoiFlowImageEncoder(codec).encode(image);
 
 		System.out.println(HexUtilities.hexArrayToString(dst.array(), dst.position(), 4, 8, 12, -5));
 
 		dst.flip();
-		new ImageDecoder(codec).decode(dst);
+		new QoiFlowImageDecoder(codec).decode(dst);
 	}
 
 	private static int addPixel(byte[] pixels, QoiColor color, int p) {

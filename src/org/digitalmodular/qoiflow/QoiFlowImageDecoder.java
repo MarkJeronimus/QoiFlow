@@ -11,13 +11,13 @@ import java.util.Objects;
  */
 // Created 2022-05-14
 // Changed 2022-06-18 Copied from FluidQOI
-public class ImageDecoder {
+public class QoiFlowImageDecoder {
 	private int width  = 0;
 	private int height = 0;
 
-	private final QoiFlowCodec codec;
+	private final QoiFlowStreamCodec codec;
 
-	public ImageDecoder(QoiFlowCodec codec) {
+	public QoiFlowImageDecoder(QoiFlowStreamCodec codec) {
 		this.codec = Objects.requireNonNull(codec, "'codec' can't be null");
 	}
 
@@ -37,7 +37,7 @@ public class ImageDecoder {
 	private void readHeader(ByteBuffer src) throws IOException {
 		int magic = src.getInt();
 
-		if (magic != ImageEncoder.QOIF_MAGIC) { // "fqoi" in big-endian
+		if (magic != QoiFlowImageEncoder.QOIF_MAGIC) { // "fqoi" in big-endian
 			throw new IOException("Bad 'magic': " + Integer.toString(magic, 16));
 		}
 
@@ -62,7 +62,7 @@ public class ImageDecoder {
 		byte footerCode = codec.getFooterCode();
 
 		boolean  detectFooter = false;
-		QoiColor lastColor    = QoiFlowCodec.START_COLOR;
+		QoiColor lastColor    = QoiFlowStreamCodec.START_COLOR;
 
 		int p = 0;
 		while (true) {

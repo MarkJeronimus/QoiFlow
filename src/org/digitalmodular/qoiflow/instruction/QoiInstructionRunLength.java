@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiFlowCodec;
+import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
 import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
@@ -16,7 +16,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	private int repeatCount = 0;
 
 	// Decoder state
-	private QoiColor lastColor        = QoiFlowCodec.START_COLOR;
+	private QoiColor lastColor        = QoiFlowStreamCodec.START_COLOR;
 	private int      repeatMultiplier = 1;
 
 	public QoiInstructionRunLength() {
@@ -37,7 +37,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	@Override
 	public void reset() {
 		repeatCount = 0;
-		lastColor = QoiFlowCodec.START_COLOR;
+		lastColor = QoiFlowStreamCodec.START_COLOR;
 	}
 
 	@Override

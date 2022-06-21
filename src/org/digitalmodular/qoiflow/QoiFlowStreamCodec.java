@@ -16,7 +16,7 @@ import static org.digitalmodular.util.Validators.requireSizeAtLeast;
  * @author Mark Jeronimus
  */
 // Created 2022-06-05
-public class QoiFlowCodec {
+public class QoiFlowStreamCodec {
 	public static final QoiColor START_COLOR = new QoiColor(0, 0, 0, 0);
 
 	// Codec configuration
@@ -32,7 +32,7 @@ public class QoiFlowCodec {
 	// Temporary state (prevent rapid allocation/de-allocation)
 	private final byte[] buffer;
 
-	public QoiFlowCodec(Collection<QoiInstruction> instructions) {
+	public QoiFlowStreamCodec(Collection<QoiInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
 
 		maxInstructionSize = findMaxInstructionSize(instructions);

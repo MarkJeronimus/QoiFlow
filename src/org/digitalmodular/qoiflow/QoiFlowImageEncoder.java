@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 // Created 2022-05-16
 // Changed 2022-06-18 Copied from FluidQOI
-public class ImageEncoder {
+public class QoiFlowImageEncoder {
 	@SuppressWarnings("CharUsedInArithmeticContext")
 	public static final int QOIF_MAGIC    = 'Q' << 24 |
 	                                        'O' << 16 |
@@ -25,9 +25,9 @@ public class ImageEncoder {
 	                                        'F';
 	public static final int HEADER_LENGTH = 32;
 
-	private final QoiFlowCodec codec;
+	private final QoiFlowStreamCodec codec;
 
-	public ImageEncoder(QoiFlowCodec codec) {
+	public QoiFlowImageEncoder(QoiFlowStreamCodec codec) {
 		this.codec = Objects.requireNonNull(codec, "'codec' can't be null");
 	}
 

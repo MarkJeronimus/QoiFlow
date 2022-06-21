@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import org.digitalmodular.qoiflow.QOIEncoderStatistics;
 import org.digitalmodular.qoiflow.QoiColor;
 import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiFlowCodec;
+import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
 import org.digitalmodular.qoiflow.QoiPixelData;
 import static org.digitalmodular.util.Validators.requireRange;
 
@@ -81,7 +81,7 @@ public abstract class QoiInstruction {
 	/**
 	 * Returns the total number of codes (values) of the first byte of this instruction, as calculated by the codec.
 	 * <p>
-	 * This is only valid when {@link QoiFlowCodec#reset()} has been called on the codec.
+	 * This is only valid when {@link QoiFlowStreamCodec#reset()} has been called on the codec.
 	 * <p>
 	 * When this is not a variable-length instruction, the value will then equal {@link #getNumCodes()}.
 	 */
@@ -96,7 +96,7 @@ public abstract class QoiInstruction {
 	/**
 	 * Sets or clears the object to track statistics with.
 	 * <p>
-	 * Normally this should not be called by the user, as {@link QoiFlowCodec#setStatistics(QOIEncoderStatistics)}
+	 * Normally this should not be called by the user, as {@link QoiFlowStreamCodec#setStatistics(QOIEncoderStatistics)}
 	 * should be called instead.
 	 */
 	public void setStatistics(QOIEncoderStatistics statistics) {
