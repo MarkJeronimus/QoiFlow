@@ -74,7 +74,7 @@ public class QOIEncoderStatistics {
 			sb.append(' ');
 		}
 
-		sb.append("   ".repeat(maxInstructionSize - len));
+		sb.append("   ".repeat(Math.max(0, maxInstructionSize - len)));
 	}
 
 	private void appendName(StringBuilder sb, QoiInstruction instruction) {
