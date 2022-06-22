@@ -38,6 +38,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	public void reset() {
 		repeatCount = 0;
 		lastColor = QoiFlowStreamCodec.START_COLOR;
+		repeatMultiplier = 1;
 	}
 
 	@Override
