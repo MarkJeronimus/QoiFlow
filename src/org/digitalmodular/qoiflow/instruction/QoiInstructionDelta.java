@@ -137,7 +137,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 		int dr = (rgba << dataShiftDR) >> msbShiftDR;
 		int dg = (rgba << dataShiftDG) >> msbShiftDG;
 		int db = (rgba << dataShiftDB) >> msbShiftDB;
-		int da = (rgba << dataShiftDA) >> msbShiftDA;
+		int da = bitsA == 0 ? 0 : (rgba << dataShiftDA) >> msbShiftDA;
 
 		QoiColor color = new QoiColorDelta(dr, dg, db, da).applyTo(lastColor);
 

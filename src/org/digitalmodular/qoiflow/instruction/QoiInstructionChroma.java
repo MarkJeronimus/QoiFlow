@@ -137,7 +137,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 		int dy = (rgba << dataShiftDY) >> msbShiftDY;
 		int cb = (rgba << dataShiftCB) >> msbShiftCB;
 		int cr = (rgba << dataShiftCR) >> msbShiftCR;
-		int da = (rgba << dataShiftDA) >> msbShiftDA;
+		int da = bitsA == 0 ? 0 : (rgba << dataShiftDA) >> msbShiftDA;
 
 		QoiColor color = new QoiColorChroma(dy, cb, cr, da).applyTo(lastColor);
 

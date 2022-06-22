@@ -28,6 +28,7 @@ import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionChroma;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionColorHistory;
+import org.digitalmodular.qoiflow.instruction.QoiInstructionDelta;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionMaskRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRunLength;
@@ -41,9 +42,10 @@ import org.digitalmodular.util.HexUtilities;
 public class TestMain {
 	private static final QoiInstruction rle      = new QoiInstructionRunLength();
 	private static final QoiInstruction hist     = new QoiInstructionColorHistory();
+	private static final QoiInstruction delta6   = new QoiInstructionDelta(2, 2, 2, 0);
+	private static final QoiInstruction delta8   = new QoiInstructionDelta(2, 2, 2, 2);
 	private static final QoiInstruction chroma6  = new QoiInstructionChroma(2, 2, 2, 0);
-	private static final QoiInstruction chroma12 = new QoiInstructionChroma(3, 3, 3, 3);
-	private static final QoiInstruction rgba12   = new QoiInstructionRGBA(4, 4, 4, 0);
+	private static final QoiInstruction chroma8  = new QoiInstructionChroma(2, 2, 2, 2);
 	private static final QoiInstruction maskRGB  = new QoiInstructionMaskRGBA(false);
 	private static final QoiInstruction maskRGBA = new QoiInstructionMaskRGBA(true);
 	private static final QoiInstruction rgba24   = new QoiInstructionRGBA(8, 8, 8, 0);
@@ -54,8 +56,8 @@ public class TestMain {
 	static QoiFlowStreamCodec codec;
 
 	static {
-		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, rgba32));
-//		codec.setVariableLength(0, codec.getNumVariableCodes() >> 1);
+		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, delta6, delta8, rgba32));
+		codec.setVariableLength(0, codec.getNumVariableCodes() >> 1);
 	}
 
 	public static void main(String... args) throws IOException {
