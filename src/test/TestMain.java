@@ -54,7 +54,7 @@ public class TestMain {
 	static QoiFlowStreamCodec codec;
 
 	static {
-		codec = new QoiFlowStreamCodec(Arrays.asList(hist, rgba32));
+		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, rgba32));
 //		codec.setVariableLength(0, codec.getNumVariableCodes() >> 1);
 	}
 
@@ -79,7 +79,7 @@ public class TestMain {
 	}
 
 	static void collectImageFilesRecursively(Collection<Path> files, Path path) throws IOException {
-		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(path, new SimpleFileVisitor<>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				super.visitFile(file, attrs);

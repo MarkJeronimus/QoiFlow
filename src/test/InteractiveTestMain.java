@@ -47,7 +47,7 @@ public class InteractiveTestMain extends JPanel {
 		fileIndex = IntStream.range(0, TestMain.files.size())
 		                     .filter(i -> {
 			                     Path file = TestMain.files.get(i);
-			                     return file.getFileName().toString().startsWith("FA31389B");
+			                     return file.getFileName().toString().startsWith("01401253");
 		                     })
 		                     .findFirst()
 		                     .orElse(0);

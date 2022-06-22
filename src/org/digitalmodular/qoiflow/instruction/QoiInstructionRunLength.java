@@ -74,7 +74,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 		// entropy. This won't work in fixed-width encodings (which is most common in computers), but is perfect for
 		// variable-width encodings.
 
-		if (repeatCount > 1) {
+		if (repeatCount >= 1) {
 			int remainingValue = repeatCount - 1;
 			int len            = 0;
 
@@ -92,7 +92,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 				statistics.record(this, dst.array(), dst.position() - len, len, lastColor, repeatCount);
 			}
 
-			repeatCount = 1;
+			repeatCount = 0;
 		}
 	}
 
