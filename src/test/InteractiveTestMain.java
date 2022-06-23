@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.digitalmodular.qoiflow.QOIEncoderStatistics;
+import org.digitalmodular.qoiflow.QoiStatistics;
 
 /**
  * @author author
@@ -26,7 +26,7 @@ import org.digitalmodular.qoiflow.QOIEncoderStatistics;
 // Created 2022-05-22
 // Changed 2022-06-18 Copied from FluidQOI
 public class InteractiveTestMain extends JPanel {
-	private static int fileIndex = 1;
+	private static int fileIndex = 0;
 
 	private BufferedImage image1 = null;
 	private BufferedImage image2 = null;
@@ -47,12 +47,13 @@ public class InteractiveTestMain extends JPanel {
 		fileIndex = IntStream.range(0, TestMain.files.size())
 		                     .filter(i -> {
 			                     Path file = TestMain.files.get(i);
-			                     return file.getFileName().toString().startsWith("0528438D");
+			                     return file.getFileName().toString().startsWith("6C74F6B6");
 		                     })
 		                     .findFirst()
 		                     .orElse(0);
 
-		TestMain.codec.setStatistics(new QOIEncoderStatistics());
+		TestMain.codec.setStatistics(new QoiStatistics());
+		TestMain.codec.getStatistics().setDumpIndividualInstructions(true);
 
 		SwingUtilities.invokeLater(() -> {
 			JFrame f = new JFrame();

@@ -41,10 +41,6 @@ public class QoiFlowImageEncoder {
 
 		codec.reset();
 
-		if (codec.getStatistics() != null) {
-			codec.printCodeOffsets();
-		}
-
 		writeHeader(width, height, dst);
 		encodeImage(image, dst);
 		codec.finishEncoding(dst);

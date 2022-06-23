@@ -1,6 +1,8 @@
 package org.digitalmodular.qoiflow;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
 import org.digitalmodular.util.HexUtilities;
@@ -11,9 +13,13 @@ import static org.digitalmodular.util.Validators.requireAtLeast;
  */
 // Created 2022-06-13
 @SuppressWarnings("FieldHasSetterButNoGetter")
-public class QOIEncoderStatistics {
-	private int maxInstructionSize = 0;
-	private int maxNameLength      = 0;
+public class QoiStatistics {
+	private int     maxInstructionSize         = 0;
+	private int     maxNameLength              = 0;
+	private boolean dumpIndividualInstructions = false;
+
+	/** Instruction name -> single-element array */
+	private final Map<String, int[]> instructionCounts = new TreeMap<>();
 
 	public void setMaxInstructionSize(int maxInstructionSize) {
 		this.maxInstructionSize = requireAtLeast(1, maxInstructionSize, "maxInstructionSize");
@@ -21,6 +27,28 @@ public class QOIEncoderStatistics {
 
 	public void setMaxNameLength(int maxNameLength) {
 		this.maxNameLength = requireAtLeast(1, maxNameLength, "maxNameLength");
+	}
+
+	public boolean isDumpIndividualInstructions() {
+		return dumpIndividualInstructions;
+	}
+
+	public void setDumpIndividualInstructions(boolean dumpIndividualInstructions) {
+		this.dumpIndividualInstructions = dumpIndividualInstructions;
+	}
+
+	public void add(QoiStatistics other) {
+		maxInstructionSize = other.maxInstructionSize;
+		maxNameLength = other.maxNameLength;
+
+		for (Map.Entry<String, int[]> entry : other.instructionCounts.entrySet()) {
+			int[] count = instructionCounts.computeIfAbsent(entry.getKey(), ignored -> new int[1]);
+			count[0] += entry.getValue()[0];
+		}
+	}
+
+	public void reset() {
+		instructionCounts.clear();
 	}
 
 	public void record(QoiInstruction instruction, ByteBuffer src, int len, QoiColor color, int... parameters) {
@@ -33,10 +61,17 @@ public class QOIEncoderStatistics {
 		if (maxNameLength == 0)
 			throw new IllegalStateException("maxNameLength has not been set yet!");
 
+		String instructionName = instruction.toString();
+		countInstruction(instructionName);
+
+		if (!dumpIndividualInstructions) {
+			return;
+		}
+
 		StringBuilder sb = new StringBuilder(80);
 
 		appendData(sb, dst, start, len);
-		appendName(sb, instruction);
+		appendName(sb, instructionName);
 		sb.append('(');
 		appendParameters(sb, parameters);
 		appendTabs(sb, maxInstructionSize - parameters.length);
@@ -53,10 +88,17 @@ public class QOIEncoderStatistics {
 		if (maxNameLength == 0)
 			throw new IllegalStateException("maxNameLength has not been set yet!");
 
+		String instructionName = instruction.toString();
+		countInstruction(instructionName);
+
+		if (!dumpIndividualInstructions) {
+			return;
+		}
+
 		StringBuilder sb = new StringBuilder(80);
 
 		appendData(sb, dst, start, len);
-		appendName(sb, instruction);
+		appendName(sb, instructionName);
 		sb.append('(');
 		appendMask(sb, mask, instruction.hasAlpha());
 		sb.append(", ");
@@ -68,6 +110,36 @@ public class QOIEncoderStatistics {
 		System.out.println(sb);
 	}
 
+	public int getInstructionCount(String instructionName) {
+		int[] count = instructionCounts.get(instructionName);
+		if (count == null) {
+			return 0;
+		} else {
+			return count[0];
+		}
+	}
+
+	public void dumpCounts() {
+		StringBuilder sb = new StringBuilder(1000);
+
+		for (Map.Entry<String, int[]> entry : instructionCounts.entrySet()) {
+			sb.append('#');
+			appendName(sb, entry.getKey());
+			sb.append(": ");
+			sb.append(entry.getValue()[0]);
+			sb.append('\n');
+		}
+
+		sb.setLength(sb.length() - 1);
+
+		System.out.println(sb);
+	}
+
+	private void countInstruction(String instructionName) {
+		int[] count = instructionCounts.computeIfAbsent(instructionName, ignored -> new int[1]);
+		count[0]++;
+	}
+
 	private void appendData(StringBuilder sb, byte[] dst, int start, int len) {
 		for (int i = start; i < start + len; i++) {
 			sb.append(HexUtilities.hexByteToString(dst[i]));
@@ -77,10 +149,8 @@ public class QOIEncoderStatistics {
 		sb.append("   ".repeat(Math.max(0, maxInstructionSize - len)));
 	}
 
-	private void appendName(StringBuilder sb, QoiInstruction instruction) {
-		String name = instruction.toString();
-
-		sb.append(name).append(" ".repeat(maxNameLength - name.length()));
+	private void appendName(StringBuilder sb, String instructionName) {
+		sb.append(instructionName).append(" ".repeat(maxNameLength - instructionName.length()));
 	}
 
 	private static void appendMask(StringBuilder sb, int mask, boolean hasAlpha) {

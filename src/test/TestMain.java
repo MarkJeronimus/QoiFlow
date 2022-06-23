@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import org.digitalmodular.qoiflow.QoiFlowImageDecoder;
 import org.digitalmodular.qoiflow.QoiFlowImageEncoder;
 import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
+import org.digitalmodular.qoiflow.QoiStatistics;
 import org.digitalmodular.qoiflow.instruction.QoiInstruction;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionChroma;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionColorHistory;
@@ -32,7 +33,6 @@ import org.digitalmodular.qoiflow.instruction.QoiInstructionDelta;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionMaskRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRunLength;
-import org.digitalmodular.util.HexUtilities;
 
 /**
  * @author Mark Jeronimus
@@ -53,11 +53,13 @@ public class TestMain {
 
 	static final List<Path> files = new ArrayList<>(20000);
 
-	static QoiFlowStreamCodec codec;
+	static               QoiFlowStreamCodec codec;
+	private static final QoiStatistics      allStatistics = new QoiStatistics();
 
 	static {
-		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, delta6, delta8, rgba32));
+		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, chroma6, chroma8, rgba32));
 		codec.setVariableLength(0, codec.getNumVariableCodes() >> 1);
+		codec.printCodeOffsets();
 	}
 
 	public static void main(String... args) throws IOException {
@@ -109,11 +111,20 @@ public class TestMain {
 			ByteBuffer qoiData = new QoiFlowImageEncoder(codec).encode(image);
 
 			if (codec.getStatistics() != null) {
-				System.out.println(HexUtilities.hexArrayToString(qoiData.array(), qoiData.position(), 4, 8, 12, -5));
+				codec.getStatistics().reset();
+//				System.out.println(HexUtilities.hexArrayToString(qoiData.array(), qoiData.position(), 4, 8, 12, -5));
 			}
 
 			qoiData.flip();
 			BufferedImage image2 = new QoiFlowImageDecoder(codec).decode(qoiData);
+
+			if (codec.getStatistics() != null) {
+				allStatistics.add(codec.getStatistics());
+				System.out.println("Image:");
+				codec.getStatistics().dumpCounts();
+				System.out.println("Totals:");
+				allStatistics.dumpCounts();
+			}
 
 			BufferedImage image1 = new BufferedImage(image2.getWidth(), image2.getHeight(), image2.getType());
 			Graphics2D    g      = image1.createGraphics();

@@ -215,11 +215,11 @@ public class QoiFlowStreamCodec {
 	 * Sets or clears the object to track statistics with.
 	 * <p>
 	 * This method gives the statistics object to all instructions contained within this encoder,
-	 * by calling their {@link QoiInstruction#setStatistics(QOIEncoderStatistics)}.
+	 * by calling their {@link QoiInstruction#setStatistics(QoiStatistics)}.
 	 * <p>
 	 * Set to {@code null} to disable statistics.
 	 */
-	public void setStatistics(QOIEncoderStatistics statistics) {
+	public void setStatistics(QoiStatistics statistics) {
 		int maxNameLength = 1;
 		for (QoiInstruction instruction : instructions) {
 			instruction.setStatistics(statistics);
@@ -231,7 +231,7 @@ public class QoiFlowStreamCodec {
 		statistics.setMaxNameLength(maxNameLength);
 	}
 
-	public QOIEncoderStatistics getStatistics() {
+	public QoiStatistics getStatistics() {
 		return instructions.get(0).getStatistics();
 	}
 
