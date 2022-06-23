@@ -50,7 +50,8 @@ public class QoiInstructionRunLength extends QoiInstruction {
 
 	@Override
 	public int encode(QoiPixelData pixel, byte[] dst) {
-		if (pixel.getColor().equals(pixel.getPrevious())) {
+		lastColor = pixel.getPrevious();
+		if (pixel.getColor().equals(lastColor)) {
 			repeatCount++;
 			return 0;
 		}
