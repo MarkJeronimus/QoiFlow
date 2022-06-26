@@ -36,6 +36,9 @@ public class QoiFlowImageEncoder {
 
 		image = QoiFlowUtilities.asCompatibleImage(image);
 
+		QoiComponentFormat componentFormat = QoiFlowImageAnalyzer.analyze(image);
+		System.out.println(componentFormat);
+
 		int width  = image.getWidth();
 		int height = image.getHeight();
 
