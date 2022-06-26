@@ -2,16 +2,16 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorChroma;
-import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiPixelData;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorChroma;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-14
-public class QoiInstructionChroma extends QoiInstruction {
+public class QoiFlowInstructionChroma extends QoiFlowInstruction {
 	/**
 	 * The amount to move the LSB bits from the original position to the left-most position.
 	 * <p>
@@ -46,7 +46,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 
 	private final int numBytes;
 
-	public QoiInstructionChroma(int bitsR, int bitsG, int bitsB, int bitsA) {
+	public QoiFlowInstructionChroma(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
 
 		msbShiftDY = 32 - bitsR;
@@ -64,8 +64,8 @@ public class QoiInstructionChroma extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
-		QoiColorChroma chroma = pixel.getChroma();
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
+		QoiFlowColorChroma chroma = pixel.getChroma();
 
 		if ((bitsA == 0) && chroma.da() != 0) {
 			return -1;
@@ -127,7 +127,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		int rgba = code - codeOffset;
 
 		for (int i = 1; i < numBytes; i++) {
@@ -139,7 +139,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 		int cr = (rgba << dataShiftCR) >> msbShiftCR;
 		int da = bitsA == 0 ? 0 : (rgba << dataShiftDA) >> msbShiftDA;
 
-		QoiColor color = new QoiColorChroma(dy, cb, cr, da).applyTo(lastColor);
+		QoiFlowColor color = new QoiFlowColorChroma(dy, cb, cr, da).applyTo(lastColor);
 
 		if (statistics != null) {
 			if (bitsA > 0) {
@@ -149,7 +149,7 @@ public class QoiInstructionChroma extends QoiInstruction {
 			}
 		}
 
-		return new QoiColorRun(color, 1);
+		return new QoiFlowColorRun(color, 1);
 	}
 
 	@Override

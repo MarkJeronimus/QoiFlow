@@ -2,24 +2,24 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorRun;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
-import org.digitalmodular.qoiflow.QoiPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-12
-public class QoiInstructionRunLength extends QoiInstruction {
+public class QoiFlowInstructionRunLength extends QoiFlowInstruction {
 	// Encoder state
 	private int repeatCount = 0;
 
 	// Decoder state
-	private QoiColor lastColor        = QoiFlowStreamCodec.START_COLOR;
-	private int      repeatMultiplier = 1;
+	private QoiFlowColor lastColor        = QoiFlowStreamCodec.START_COLOR;
+	private int          repeatMultiplier = 1;
 
-	public QoiInstructionRunLength() {
+	public QoiFlowInstructionRunLength() {
 		super(1, 1, 1, 0); // Bits are irrelevant
 	}
 
@@ -42,14 +42,14 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	}
 
 	@Override
-	public void preEncode(QoiPixelData pixel, ByteBuffer dst) {
+	public void preEncode(QoiFlowPixelData pixel, ByteBuffer dst) {
 		if (!pixel.getColor().equals(pixel.getPrevious())) {
 			postEncode(dst);
 		}
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
 		lastColor = pixel.getPrevious();
 		if (pixel.getColor().equals(lastColor)) {
 			repeatCount++;
@@ -99,7 +99,7 @@ public class QoiInstructionRunLength extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		repeatCount = (code - codeOffset + 1) * repeatMultiplier;
 		repeatMultiplier *= calculatedCodeCount;
 
@@ -107,11 +107,11 @@ public class QoiInstructionRunLength extends QoiInstruction {
 			statistics.record(this, src, 1, lastColor, repeatCount);
 		}
 
-		return new QoiColorRun(lastColor, repeatCount);
+		return new QoiFlowColorRun(lastColor, repeatCount);
 	}
 
 	@Override
-	public void postDecode(QoiColor color) {
+	public void postDecode(QoiFlowColor color) {
 		if (!lastColor.equals(color)) {
 			lastColor = color;
 			repeatMultiplier = 1;

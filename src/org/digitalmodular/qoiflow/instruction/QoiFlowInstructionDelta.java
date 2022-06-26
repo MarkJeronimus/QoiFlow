@@ -2,16 +2,16 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorDelta;
-import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiPixelData;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorDelta;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-12
-public class QoiInstructionDelta extends QoiInstruction {
+public class QoiFlowInstructionDelta extends QoiFlowInstruction {
 	/**
 	 * The amount to move the LSB bits from the original position to the left-most position.
 	 * <p>
@@ -46,7 +46,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 
 	private final int numBytes;
 
-	public QoiInstructionDelta(int bitsR, int bitsG, int bitsB, int bitsA) {
+	public QoiFlowInstructionDelta(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
 
 		msbShiftDR = 32 - bitsR;
@@ -64,8 +64,8 @@ public class QoiInstructionDelta extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
-		QoiColorDelta delta = pixel.getDelta();
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
+		QoiFlowColorDelta delta = pixel.getDelta();
 
 		if ((bitsA == 0) && delta.da() != 0) {
 			return -1;
@@ -127,7 +127,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		int rgba = code - codeOffset;
 
 		for (int i = 1; i < numBytes; i++) {
@@ -139,7 +139,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 		int db = (rgba << dataShiftDB) >> msbShiftDB;
 		int da = bitsA == 0 ? 0 : (rgba << dataShiftDA) >> msbShiftDA;
 
-		QoiColor color = new QoiColorDelta(dr, dg, db, da).applyTo(lastColor);
+		QoiFlowColor color = new QoiFlowColorDelta(dr, dg, db, da).applyTo(lastColor);
 
 		if (statistics != null) {
 			if (bitsA > 0) {
@@ -149,7 +149,7 @@ public class QoiInstructionDelta extends QoiInstruction {
 			}
 		}
 
-		return new QoiColorRun(color, 1);
+		return new QoiFlowColorRun(color, 1);
 	}
 
 	@Override

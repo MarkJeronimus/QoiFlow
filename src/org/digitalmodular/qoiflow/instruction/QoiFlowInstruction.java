@@ -2,18 +2,18 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorRun;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
+import org.digitalmodular.qoiflow.QoiFlowStatistics;
 import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
-import org.digitalmodular.qoiflow.QoiPixelData;
-import org.digitalmodular.qoiflow.QoiStatistics;
 import static org.digitalmodular.util.Validators.requireRange;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-05
-public abstract class QoiInstruction {
+public abstract class QoiFlowInstruction {
 	/**
 	 * The number of bits to encode each component with.
 	 * <p>
@@ -29,9 +29,9 @@ public abstract class QoiInstruction {
 	protected int codeOffset          = 0;
 	protected int calculatedCodeCount = 1;
 
-	protected QoiStatistics statistics = null;
+	protected QoiFlowStatistics statistics = null;
 
-	protected QoiInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
+	protected QoiFlowInstruction(int bitsR, int bitsG, int bitsB, int bitsA) {
 		this.bitsR = requireRange(1, 8, bitsR, "bitsR");
 		this.bitsG = requireRange(1, 8, bitsG, "bitsG");
 		this.bitsB = requireRange(1, 8, bitsB, "bitsB");
@@ -96,14 +96,14 @@ public abstract class QoiInstruction {
 	/**
 	 * Sets or clears the object to track statistics with.
 	 * <p>
-	 * Normally this should not be called by the user, as {@link QoiFlowStreamCodec#setStatistics(QoiStatistics)}
+	 * Normally this should not be called by the user, as {@link QoiFlowStreamCodec#setStatistics(QoiFlowStatistics)}
 	 * should be called instead.
 	 */
-	public void setStatistics(QoiStatistics statistics) {
+	public void setStatistics(QoiFlowStatistics statistics) {
 		this.statistics = statistics;
 	}
 
-	public QoiStatistics getStatistics() {
+	public QoiFlowStatistics getStatistics() {
 		return statistics;
 	}
 
@@ -118,13 +118,13 @@ public abstract class QoiInstruction {
 	/**
 	 * Give the instruction the opportunity to emit deferred data based on the new pixel.
 	 * <p>
-	 * Unlike {@link #encode(QoiPixelData, byte[])}, this will be called on every instruction always.
+	 * Unlike {@link #encode(QoiFlowPixelData, byte[])}, this will be called on every instruction always.
 	 * <p>
 	 * This is required, for example, for RLE, to emit instructions when the color is no longer equal to the previous.
 	 * <p>
 	 * Does nothing unless overridden.
 	 */
-	public void preEncode(QoiPixelData pixel, ByteBuffer dst) {
+	public void preEncode(QoiFlowPixelData pixel, ByteBuffer dst) {
 	}
 
 	/**
@@ -135,7 +135,7 @@ public abstract class QoiInstruction {
 	 * @return The amount of bytes this instruction stored in {@code dst} encode the color,
 	 * or -1 if it could not encode.
 	 */
-	public abstract int encode(QoiPixelData pixel, byte[] dst);
+	public abstract int encode(QoiFlowPixelData pixel, byte[] dst);
 
 	/**
 	 * Give the instruction the opportunity to emit deferred data at the end of the stream.
@@ -158,7 +158,7 @@ public abstract class QoiInstruction {
 	 * @return The amount of bytes this instruction stored in {@code dst} encode the color,
 	 * or -1 if it could not encode.
 	 */
-	public abstract QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor);
+	public abstract QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor);
 
 	/**
 	 * Give the instruction the opportunity to update it's internal state depending on the decoded color.
@@ -167,7 +167,7 @@ public abstract class QoiInstruction {
 	 * <p>
 	 * Does nothing unless overridden.
 	 */
-	public void postDecode(QoiColor color) {
+	public void postDecode(QoiFlowColor color) {
 	}
 
 	/**

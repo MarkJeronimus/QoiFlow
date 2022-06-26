@@ -3,27 +3,27 @@ package org.digitalmodular.qoiflow.instruction;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiPixelData;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-05
-public class QoiInstructionColorHistory extends QoiInstruction {
-	public static final QoiColor INITIAL_COLOR = new QoiColor(0, 0, 0, 0);
+public class QoiFlowInstructionColorHistory extends QoiFlowInstruction {
+	public static final QoiFlowColor INITIAL_COLOR = new QoiFlowColor(0, 0, 0, 0);
 
-	private QoiColor[] recentColorsList = new QoiColor[1];
-	private int        recentColorIndex = 0;
+	private QoiFlowColor[] recentColorsList = new QoiFlowColor[1];
+	private int            recentColorIndex = 0;
 
 	// Encoder state
-	private QoiColor lastColor = null;
+	private QoiFlowColor lastColor = null;
 
 	// Decoder state
 	private boolean pixelDecoded = false;
 
-	public QoiInstructionColorHistory() {
+	public QoiFlowInstructionColorHistory() {
 		super(1, 1, 1, 0); // Bits are irrelevant
 	}
 
@@ -41,7 +41,7 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	public void setCodeOffsetAndCount(int codeOffset, int calculatedCodeCount) {
 		super.setCodeOffsetAndCount(codeOffset, calculatedCodeCount);
 
-		recentColorsList = new QoiColor[calculatedCodeCount];
+		recentColorsList = new QoiFlowColor[calculatedCodeCount];
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
-		QoiColor color = pixel.getColor();
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
+		QoiFlowColor color = pixel.getColor();
 
 		boolean repeatColor = color.equals(lastColor);
 		lastColor = null;
@@ -84,25 +84,25 @@ public class QoiInstructionColorHistory extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		pixelDecoded = true;
 
-		int      index = code - codeOffset;
-		QoiColor color = recentColorsList[index];
+		int          index = code - codeOffset;
+		QoiFlowColor color = recentColorsList[index];
 
 		if (statistics != null) {
 			statistics.record(this, src, 1, color, index);
 		}
 
-		return new QoiColorRun(color, 1);
+		return new QoiFlowColorRun(color, 1);
 	}
 
 	@Override
-	public void postDecode(QoiColor color) {
+	public void postDecode(QoiFlowColor color) {
 		if (pixelDecoded) {
 			pixelDecoded = false;
 		} else {
-			for (QoiColor storedColor : recentColorsList) {
+			for (QoiFlowColor storedColor : recentColorsList) {
 				if (storedColor.equals(color)) {
 					return;
 				}

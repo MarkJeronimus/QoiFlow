@@ -28,32 +28,32 @@ package org.digitalmodular.qoiflow;
  * @author Mark Jeronimus
  */
 // Created 2022-06-06
-public record QoiColorChroma(int dy,
-                             int cb,
-                             int cr,
-                             int da) {
-	public QoiColorChroma(int dy, int cb, int cr, int da) {
+public record QoiFlowColorChroma(int dy,
+                                 int cb,
+                                 int cr,
+                                 int da) {
+	public QoiFlowColorChroma(int dy, int cb, int cr, int da) {
 		this.dy = (byte)dy;
 		this.cb = (byte)cb;
 		this.cr = (byte)cr;
 		this.da = (byte)da;
 	}
 
-	public static QoiColorChroma fromColors(QoiColor previous, QoiColor current) {
+	public static QoiFlowColorChroma fromColors(QoiFlowColor previous, QoiFlowColor current) {
 		int dr = current.r() - previous.r();
 		int dg = current.g() - previous.g();
 		int db = current.b() - previous.b();
 		int da = current.a() - previous.a();
 
-		return new QoiColorChroma(dg, db - dg, dr - dg, da);
+		return new QoiFlowColorChroma(dg, db - dg, dr - dg, da);
 	}
 
-	public QoiColor applyTo(QoiColor color) {
+	public QoiFlowColor applyTo(QoiFlowColor color) {
 		int r = color.r() + dy + cr;
 		int g = color.g() + dy;
 		int b = color.b() + dy + cb;
 		int a = color.a() + da;
 
-		return new QoiColor(r, g, b, a);
+		return new QoiFlowColor(r, g, b, a);
 	}
 }

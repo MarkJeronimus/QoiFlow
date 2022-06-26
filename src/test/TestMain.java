@@ -24,15 +24,15 @@ import javax.imageio.ImageIO;
 
 import org.digitalmodular.qoiflow.QoiFlowImageDecoder;
 import org.digitalmodular.qoiflow.QoiFlowImageEncoder;
+import org.digitalmodular.qoiflow.QoiFlowStatistics;
 import org.digitalmodular.qoiflow.QoiFlowStreamCodec;
-import org.digitalmodular.qoiflow.QoiStatistics;
-import org.digitalmodular.qoiflow.instruction.QoiInstruction;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionChroma;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionColorHistory;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionDelta;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionMaskRGBA;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
-import org.digitalmodular.qoiflow.instruction.QoiInstructionRunLength;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstruction;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionChroma;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionColorHistory;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionDelta;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionMaskRGBA;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionRGBA;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstructionRunLength;
 import org.digitalmodular.util.HexUtilities;
 
 /**
@@ -41,22 +41,22 @@ import org.digitalmodular.util.HexUtilities;
 // Created 2022-05-22
 // Changed 2022-06-18 Copied from FluidQOI
 public class TestMain {
-	private static final QoiInstruction rle      = new QoiInstructionRunLength();
-	private static final QoiInstruction hist     = new QoiInstructionColorHistory();
-	private static final QoiInstruction delta6   = new QoiInstructionDelta(2, 2, 2, 0);
-	private static final QoiInstruction delta8   = new QoiInstructionDelta(2, 2, 2, 2);
-	private static final QoiInstruction chroma6  = new QoiInstructionChroma(2, 2, 2, 0);
-	private static final QoiInstruction chroma8  = new QoiInstructionChroma(2, 2, 2, 2);
-	private static final QoiInstruction maskRGB  = new QoiInstructionMaskRGBA(false);
-	private static final QoiInstruction maskRGBA = new QoiInstructionMaskRGBA(true);
-	private static final QoiInstruction rgba441  = new QoiInstructionRGBA(4, 4, 1, 0);
-	private static final QoiInstruction rgba888  = new QoiInstructionRGBA(8, 8, 8, 0);
-	private static final QoiInstruction rgba8888 = new QoiInstructionRGBA(8, 8, 8, 8);
+	private static final QoiFlowInstruction rle      = new QoiFlowInstructionRunLength();
+	private static final QoiFlowInstruction hist     = new QoiFlowInstructionColorHistory();
+	private static final QoiFlowInstruction delta6   = new QoiFlowInstructionDelta(2, 2, 2, 0);
+	private static final QoiFlowInstruction delta8   = new QoiFlowInstructionDelta(2, 2, 2, 2);
+	private static final QoiFlowInstruction chroma6  = new QoiFlowInstructionChroma(2, 2, 2, 0);
+	private static final QoiFlowInstruction chroma8  = new QoiFlowInstructionChroma(2, 2, 2, 2);
+	private static final QoiFlowInstruction maskRGB  = new QoiFlowInstructionMaskRGBA(false);
+	private static final QoiFlowInstruction maskRGBA = new QoiFlowInstructionMaskRGBA(true);
+	private static final QoiFlowInstruction rgba441  = new QoiFlowInstructionRGBA(4, 4, 1, 0);
+	private static final QoiFlowInstruction rgba888  = new QoiFlowInstructionRGBA(8, 8, 8, 0);
+	private static final QoiFlowInstruction rgba8888 = new QoiFlowInstructionRGBA(8, 8, 8, 8);
 
 	static final List<Path> files = new ArrayList<>(20000);
 
 	static               QoiFlowStreamCodec codec;
-	private static final QoiStatistics      allStatistics = new QoiStatistics();
+	private static final QoiFlowStatistics  allStatistics = new QoiFlowStatistics();
 
 	static {
 		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, chroma6, chroma8, rgba8888));

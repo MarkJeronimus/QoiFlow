@@ -2,15 +2,15 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiPixelData;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-05
-public class QoiInstructionRGBA extends QoiInstruction {
+public class QoiFlowInstructionRGBA extends QoiFlowInstruction {
 	/**
 	 * The amount to move the MSB bits from position 32 to the position in the datagram.
 	 * <p>
@@ -47,7 +47,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 
 	private final int numBytes;
 
-	public QoiInstructionRGBA(int bitsR, int bitsG, int bitsB, int bitsA) {
+	public QoiFlowInstructionRGBA(int bitsR, int bitsG, int bitsB, int bitsA) {
 		super(bitsR, bitsG, bitsB, bitsA);
 
 		shiftA = 32 - bitsA;
@@ -65,12 +65,12 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
 		if ((bitsA == 0) && pixel.getDelta().da() != 0) {
 			return -1;
 		}
 
-		QoiColor color = pixel.getColor();
+		QoiFlowColor color = pixel.getColor();
 
 		int r = ((color.r() << 24) >>> shiftR) & maskR;
 		int g = ((color.g() << 24) >>> shiftG) & maskG;
@@ -120,7 +120,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		int rgba = code - codeOffset;
 
 		for (int i = 1; i < numBytes; i++) {
@@ -132,7 +132,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 		int b = ((rgba & maskB) << shiftB) >>> 24;
 		int a = ((rgba & maskA) << shiftA) >>> 24;
 
-		QoiColor color = new QoiColor(r, g, b, a);
+		QoiFlowColor color = new QoiFlowColor(r, g, b, a);
 
 		if (statistics != null) {
 			if (bitsA > 0) {
@@ -142,7 +142,7 @@ public class QoiInstructionRGBA extends QoiInstruction {
 			}
 		}
 
-		return new QoiColorRun(color, 1);
+		return new QoiFlowColorRun(color, 1);
 	}
 
 	@Override

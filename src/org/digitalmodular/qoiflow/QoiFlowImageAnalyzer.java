@@ -16,7 +16,7 @@ public final class QoiFlowImageAnalyzer {
 		throw new AssertionError();
 	}
 
-	public static QoiComponentFormat analyze(BufferedImage image) {
+	public static QoiFlowComponentFormat analyze(BufferedImage image) {
 		DataBuffer dataBuffer = image.getRaster().getDataBuffer();
 		if (dataBuffer instanceof DataBufferByte) {
 			return analyzeComponentColorModelImage(image);
@@ -27,7 +27,7 @@ public final class QoiFlowImageAnalyzer {
 		}
 	}
 
-	private static QoiComponentFormat analyzeComponentColorModelImage(BufferedImage image) {
+	private static QoiFlowComponentFormat analyzeComponentColorModelImage(BufferedImage image) {
 		byte[] samples     = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
 		int[]  bandOffsets = ((ComponentSampleModel)image.getRaster().getSampleModel()).getBandOffsets();
 
@@ -56,13 +56,13 @@ public final class QoiFlowImageAnalyzer {
 			throw new IllegalArgumentException("Incompatible image: " + image);
 		}
 
-		return new QoiComponentFormat(bitsRequiredFor(usedBitsR),
-		                              bitsRequiredFor(usedBitsG),
-		                              bitsRequiredFor(usedBitsB),
-		                              bitsRequiredFor(usedBitsA));
+		return new QoiFlowComponentFormat(bitsRequiredFor(usedBitsR),
+		                                  bitsRequiredFor(usedBitsG),
+		                                  bitsRequiredFor(usedBitsB),
+		                                  bitsRequiredFor(usedBitsA));
 	}
 
-	private static QoiComponentFormat analyzeDirectColorModelImage(BufferedImage image) {
+	private static QoiFlowComponentFormat analyzeDirectColorModelImage(BufferedImage image) {
 		int[] pixels     = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		int[] bitOffsets = ((SinglePixelPackedSampleModel)image.getSampleModel()).getBitOffsets();
 
@@ -88,10 +88,10 @@ public final class QoiFlowImageAnalyzer {
 			throw new IllegalArgumentException("Incompatible image: " + image);
 		}
 
-		return new QoiComponentFormat(bitsRequiredFor(usedBitsR),
-		                              bitsRequiredFor(usedBitsG),
-		                              bitsRequiredFor(usedBitsB),
-		                              bitsRequiredFor(usedBitsA));
+		return new QoiFlowComponentFormat(bitsRequiredFor(usedBitsR),
+		                                  bitsRequiredFor(usedBitsG),
+		                                  bitsRequiredFor(usedBitsB),
+		                                  bitsRequiredFor(usedBitsA));
 	}
 
 	private static int bitsRequiredFor(int value) {

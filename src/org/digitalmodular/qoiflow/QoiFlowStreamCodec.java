@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.digitalmodular.qoiflow.instruction.QoiInstruction;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstruction;
 import org.digitalmodular.util.HexUtilities;
 import static org.digitalmodular.util.Validators.requireRange;
 import static org.digitalmodular.util.Validators.requireSizeAtLeast;
@@ -17,22 +17,22 @@ import static org.digitalmodular.util.Validators.requireSizeAtLeast;
  */
 // Created 2022-06-05
 public class QoiFlowStreamCodec {
-	public static final QoiColor START_COLOR = new QoiColor(0, 0, 0, 0);
+	public static final QoiFlowColor START_COLOR = new QoiFlowColor(0, 0, 0, 0);
 
 	// Codec configuration
-	private final List<QoiInstruction> instructions;
-	private final int                  maxInstructionSize;
-	private final int                  numFixedCodes;
-	private final int[]                variableLengths;
+	private final List<QoiFlowInstruction> instructions;
+	private final int                      maxInstructionSize;
+	private final int                      numFixedCodes;
+	private final int[]                    variableLengths;
 
 	// Codec state during encoding/decoding (prevent rapid allocation/de-allocation)
-	private QoiColor previousColor = START_COLOR;
-	private byte     footerCode    = 0;
+	private QoiFlowColor previousColor = START_COLOR;
+	private byte         footerCode    = 0;
 
 	// Temporary state (prevent rapid allocation/de-allocation)
 	private final byte[] buffer;
 
-	public QoiFlowStreamCodec(Collection<QoiInstruction> instructions) {
+	public QoiFlowStreamCodec(Collection<QoiFlowInstruction> instructions) {
 		this.instructions = new ArrayList<>(requireSizeAtLeast(2, instructions, "instructions"));
 
 		maxInstructionSize = findMaxInstructionSize(instructions);
@@ -45,20 +45,20 @@ public class QoiFlowStreamCodec {
 		buffer = new byte[maxInstructionSize];
 	}
 
-	private static int findMaxInstructionSize(Iterable<QoiInstruction> instructions) {
+	private static int findMaxInstructionSize(Iterable<QoiFlowInstruction> instructions) {
 		int maxInstructionSize = 0;
 
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			maxInstructionSize = Math.max(maxInstructionSize, instruction.getMaxSize());
 		}
 
 		return maxInstructionSize;
 	}
 
-	private static int countNumVariableInstructions(Iterable<QoiInstruction> instructions) {
+	private static int countNumVariableInstructions(Iterable<QoiFlowInstruction> instructions) {
 		int numVariableInstructions = 0;
 
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			if (instruction.getNumCodes() == 0) {
 				numVariableInstructions++;
 			}
@@ -71,10 +71,10 @@ public class QoiFlowStreamCodec {
 		return numVariableInstructions;
 	}
 
-	private static int countNumFixedCodes(Iterable<QoiInstruction> instructions, int numVariableInstructions) {
+	private static int countNumFixedCodes(Iterable<QoiFlowInstruction> instructions, int numVariableInstructions) {
 		int numFixedCodes = 0;
 
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			numFixedCodes += instruction.getNumCodes();
 		}
 
@@ -153,7 +153,7 @@ public class QoiFlowStreamCodec {
 		}
 	}
 
-	public Collection<? extends QoiInstruction> instructions() {
+	public Collection<? extends QoiFlowInstruction> instructions() {
 		return Collections.unmodifiableList(instructions);
 	}
 
@@ -163,7 +163,7 @@ public class QoiFlowStreamCodec {
 		previousColor = START_COLOR;
 		footerCode = findFooterCode(instructions);
 
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			instruction.reset();
 		}
 	}
@@ -171,7 +171,7 @@ public class QoiFlowStreamCodec {
 	private void prepareCodeOffsets() {
 		int codeOffset               = 256;
 		int variableInstructionIndex = 0;
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			int numCodes = instruction.getNumCodes();
 
 			if (numCodes == 0) {
@@ -185,8 +185,8 @@ public class QoiFlowStreamCodec {
 		}
 	}
 
-	private static byte findFooterCode(Iterable<QoiInstruction> instructions) {
-		for (QoiInstruction instruction : instructions) {
+	private static byte findFooterCode(Iterable<QoiFlowInstruction> instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			if (!instruction.canRepeatBytes()) {
 				return (byte)instruction.getCodeOffset();
 			}
@@ -197,7 +197,7 @@ public class QoiFlowStreamCodec {
 
 	public void printCodeOffsets() {
 		int lastCodeOffset = 256;
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			int codeOffset = instruction.getCodeOffset();
 			int numCodes   = instruction.getCalculatedCodeCount();
 			if (lastCodeOffset - 1 == codeOffset) {
@@ -215,13 +215,13 @@ public class QoiFlowStreamCodec {
 	 * Sets or clears the object to track statistics with.
 	 * <p>
 	 * This method gives the statistics object to all instructions contained within this encoder,
-	 * by calling their {@link QoiInstruction#setStatistics(QoiStatistics)}.
+	 * by calling their {@link QoiFlowInstruction#setStatistics(QoiFlowStatistics)}.
 	 * <p>
 	 * Set to {@code null} to disable statistics.
 	 */
-	public void setStatistics(QoiStatistics statistics) {
+	public void setStatistics(QoiFlowStatistics statistics) {
 		int maxNameLength = 1;
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			instruction.setStatistics(statistics);
 
 			maxNameLength = Math.max(maxNameLength, instruction.toString().length());
@@ -231,12 +231,12 @@ public class QoiFlowStreamCodec {
 		statistics.setMaxNameLength(maxNameLength);
 	}
 
-	public QoiStatistics getStatistics() {
+	public QoiFlowStatistics getStatistics() {
 		return instructions.get(0).getStatistics();
 	}
 
-	public void encode(QoiColor color, ByteBuffer dst) {
-		QoiPixelData pixel = new QoiPixelData(previousColor, color);
+	public void encode(QoiFlowColor color, ByteBuffer dst) {
+		QoiFlowPixelData pixel = new QoiFlowPixelData(previousColor, color);
 
 		preEncode(pixel, dst);
 		mainEncode(pixel, dst);
@@ -251,14 +251,14 @@ public class QoiFlowStreamCodec {
 	 * <p>
 	 * Does nothing unless overridden.
 	 */
-	private void preEncode(QoiPixelData pixel, ByteBuffer dst) {
-		for (QoiInstruction instruction : instructions) {
+	private void preEncode(QoiFlowPixelData pixel, ByteBuffer dst) {
+		for (QoiFlowInstruction instruction : instructions) {
 			instruction.preEncode(pixel, dst);
 		}
 	}
 
-	private void mainEncode(QoiPixelData pixel, ByteBuffer dst) {
-		for (QoiInstruction instruction : instructions) {
+	private void mainEncode(QoiFlowPixelData pixel, ByteBuffer dst) {
+		for (QoiFlowInstruction instruction : instructions) {
 			int numBytes = instruction.encode(pixel, buffer);
 			if (numBytes >= 0) {
 				dst.put(buffer, 0, numBytes);
@@ -278,13 +278,13 @@ public class QoiFlowStreamCodec {
 	 * This is required, for example, for RLE, to emit instructions when the counter is {@code > 1}.
 	 */
 	public void finishEncoding(ByteBuffer dst) {
-		for (QoiInstruction instruction : instructions) {
+		for (QoiFlowInstruction instruction : instructions) {
 			instruction.postEncode(dst);
 		}
 	}
 
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
-		for (QoiInstruction instruction : instructions) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
+		for (QoiFlowInstruction instruction : instructions) {
 			if (code >= instruction.getCodeOffset()) {
 				return instruction.decode(code, src, lastColor);
 			}
@@ -298,8 +298,8 @@ public class QoiFlowStreamCodec {
 	 * <p>
 	 * This is required, for example, for Color History, to record a color not decoded by itself.
 	 */
-	public void postDecode(QoiColor color) {
-		for (QoiInstruction instruction : instructions) {
+	public void postDecode(QoiFlowColor color) {
+		for (QoiFlowInstruction instruction : instructions) {
 			instruction.postDecode(color);
 		}
 	}

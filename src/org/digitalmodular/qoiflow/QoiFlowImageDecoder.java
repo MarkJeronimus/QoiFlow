@@ -63,8 +63,8 @@ public class QoiFlowImageDecoder {
 	private void decodeImage(ByteBuffer src, byte[] pixels) {
 		byte footerCode = codec.getFooterCode();
 
-		boolean  detectFooter = false;
-		QoiColor lastColor    = QoiFlowStreamCodec.START_COLOR;
+		boolean      detectFooter = false;
+		QoiFlowColor lastColor    = QoiFlowStreamCodec.START_COLOR;
 
 		int p = 0;
 		while (true) {
@@ -75,7 +75,7 @@ public class QoiFlowImageDecoder {
 				break;
 			}
 
-			QoiColorRun colorRun = codec.decode(code, src, lastColor);
+			QoiFlowColorRun colorRun = codec.decode(code, src, lastColor);
 			lastColor = colorRun.color();
 			int count = colorRun.count();
 
@@ -95,7 +95,7 @@ public class QoiFlowImageDecoder {
 		}
 	}
 
-	private static int setRGBA(QoiColor color, int count, byte[] pixels, int p) {
+	private static int setRGBA(QoiFlowColor color, int count, byte[] pixels, int p) {
 		for (int i = count; i > 0; i--) {
 			pixels[p++] = (byte)color.a();
 			pixels[p++] = (byte)color.b();

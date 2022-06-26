@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.digitalmodular.qoiflow.QoiStatistics;
+import org.digitalmodular.qoiflow.QoiFlowStatistics;
 
 /**
  * @author Mark Jeronimus
@@ -51,7 +51,7 @@ public class InteractiveTestMain extends JPanel {
 //		                     .findFirst()
 //		                     .orElse(0);
 
-		TestMain.codec.setStatistics(new QoiStatistics());
+		TestMain.codec.setStatistics(new QoiFlowStatistics());
 //		TestMain.codec.getStatistics().setDumpIndividualInstructions(true);
 
 		SwingUtilities.invokeLater(() -> {

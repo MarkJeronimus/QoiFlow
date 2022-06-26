@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.digitalmodular.qoiflow.instruction.QoiInstruction;
+import org.digitalmodular.qoiflow.instruction.QoiFlowInstruction;
 import org.digitalmodular.util.HexUtilities;
 import static org.digitalmodular.util.Validators.requireAtLeast;
 
@@ -13,7 +13,7 @@ import static org.digitalmodular.util.Validators.requireAtLeast;
  */
 // Created 2022-06-13
 @SuppressWarnings("FieldHasSetterButNoGetter")
-public class QoiStatistics {
+public class QoiFlowStatistics {
 	private int     maxInstructionSize         = 0;
 	private int     maxNameLength              = 0;
 	private boolean dumpIndividualInstructions = false;
@@ -37,7 +37,7 @@ public class QoiStatistics {
 		this.dumpIndividualInstructions = dumpIndividualInstructions;
 	}
 
-	public void add(QoiStatistics other) {
+	public void add(QoiFlowStatistics other) {
 		maxInstructionSize = other.maxInstructionSize;
 		maxNameLength = other.maxNameLength;
 
@@ -51,11 +51,12 @@ public class QoiStatistics {
 		instructionCounts.clear();
 	}
 
-	public void record(QoiInstruction instruction, ByteBuffer src, int len, QoiColor color, int... parameters) {
+	public void record(QoiFlowInstruction instruction, ByteBuffer src, int len, QoiFlowColor color, int... parameters) {
 		record(instruction, src.array(), src.position() - len, len, color, parameters);
 	}
 
-	public void record(QoiInstruction instruction, byte[] dst, int start, int len, QoiColor color, int... parameters) {
+	public void record(
+			QoiFlowInstruction instruction, byte[] dst, int start, int len, QoiFlowColor color, int... parameters) {
 		if (maxInstructionSize == 0)
 			throw new IllegalStateException("maxInstructionSize has not been set yet!");
 		if (maxNameLength == 0)
@@ -81,8 +82,13 @@ public class QoiStatistics {
 		System.out.println(sb);
 	}
 
-	public void recordMask(
-			QoiInstruction instruction, byte[] dst, int start, int len, int mask, QoiColor color, int... parameters) {
+	public void recordMask(QoiFlowInstruction instruction,
+	                       byte[] dst,
+	                       int start,
+	                       int len,
+	                       int mask,
+	                       QoiFlowColor color,
+	                       int... parameters) {
 		if (maxInstructionSize == 0)
 			throw new IllegalStateException("maxInstructionSize has not been set yet!");
 		if (maxNameLength == 0)
@@ -180,7 +186,7 @@ public class QoiStatistics {
 		sb.append("      ".repeat(Math.max(0, n)));
 	}
 
-	private static void appendColor(StringBuilder sb, QoiColor color) {
+	private static void appendColor(StringBuilder sb, QoiFlowColor color) {
 		sb.append(String.format("QoiCOLOR(%3d, %3d, %3d, %3d)", color.r(), color.g(), color.b(), color.a()));
 	}
 }

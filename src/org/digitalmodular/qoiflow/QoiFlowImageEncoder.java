@@ -36,7 +36,7 @@ public class QoiFlowImageEncoder {
 
 		image = QoiFlowUtilities.asCompatibleImage(image);
 
-		QoiComponentFormat componentFormat = QoiFlowImageAnalyzer.analyze(image);
+		QoiFlowComponentFormat componentFormat = QoiFlowImageAnalyzer.analyze(image);
 		System.out.println(componentFormat);
 
 		int width  = image.getWidth();
@@ -54,7 +54,7 @@ public class QoiFlowImageEncoder {
 		return dst;
 	}
 
-	private static void writeHeader(int width, int height, QoiComponentFormat componentFormat, ByteBuffer dst) {
+	private static void writeHeader(int width, int height, QoiFlowComponentFormat componentFormat, ByteBuffer dst) {
 		dst.putInt(QOIF_MAGIC);
 		dst.putInt(width);
 		dst.putInt(height);
@@ -86,7 +86,7 @@ public class QoiFlowImageEncoder {
 				byte g = samples[p + bandOffsets[1]];
 				byte b = samples[p + bandOffsets[2]];
 				byte a = samples[p + bandOffsets[3]];
-				codec.encode(new QoiColor(r, g, b, a), dst);
+				codec.encode(new QoiFlowColor(r, g, b, a), dst);
 				p += 4;
 			}
 		} else if (bandOffsets.length == 3) {
@@ -94,7 +94,7 @@ public class QoiFlowImageEncoder {
 				byte r = samples[p + bandOffsets[0]];
 				byte g = samples[p + bandOffsets[1]];
 				byte b = samples[p + bandOffsets[2]];
-				codec.encode(new QoiColor(r, g, b, (byte)255), dst);
+				codec.encode(new QoiFlowColor(r, g, b, (byte)255), dst);
 				p += 3;
 			}
 		} else {
@@ -112,14 +112,14 @@ public class QoiFlowImageEncoder {
 				byte g = (byte)(pixel >> bitOffsets[1]);
 				byte b = (byte)(pixel >> bitOffsets[2]);
 				byte a = (byte)(pixel >> bitOffsets[3]);
-				codec.encode(new QoiColor(r, g, b, a), dst);
+				codec.encode(new QoiFlowColor(r, g, b, a), dst);
 			}
 		} else if (bitOffsets.length == 3) {
 			for (int pixel : pixels) {
 				byte r = (byte)(pixel >> bitOffsets[0]);
 				byte g = (byte)(pixel >> bitOffsets[1]);
 				byte b = (byte)(pixel >> bitOffsets[2]);
-				codec.encode(new QoiColor(r, g, b, (byte)255), dst);
+				codec.encode(new QoiFlowColor(r, g, b, (byte)255), dst);
 			}
 		} else {
 			throw new AssertionError("Analyzer returned invalid image: " + image.getSampleModel());

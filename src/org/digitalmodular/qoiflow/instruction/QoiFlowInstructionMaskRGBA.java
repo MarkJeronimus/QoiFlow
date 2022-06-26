@@ -2,17 +2,17 @@ package org.digitalmodular.qoiflow.instruction;
 
 import java.nio.ByteBuffer;
 
-import org.digitalmodular.qoiflow.QoiColor;
-import org.digitalmodular.qoiflow.QoiColorDelta;
-import org.digitalmodular.qoiflow.QoiColorRun;
-import org.digitalmodular.qoiflow.QoiPixelData;
+import org.digitalmodular.qoiflow.QoiFlowColor;
+import org.digitalmodular.qoiflow.QoiFlowColorDelta;
+import org.digitalmodular.qoiflow.QoiFlowColorRun;
+import org.digitalmodular.qoiflow.QoiFlowPixelData;
 
 /**
  * @author Mark Jeronimus
  */
 // Created 2022-06-15
-public class QoiInstructionMaskRGBA extends QoiInstruction {
-	public QoiInstructionMaskRGBA(boolean hasAlpha) {
+public class QoiFlowInstructionMaskRGBA extends QoiFlowInstruction {
+	public QoiFlowInstructionMaskRGBA(boolean hasAlpha) {
 		super(8, 8, 8, hasAlpha ? 8 : 0);
 	}
 
@@ -32,13 +32,13 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public int encode(QoiPixelData pixel, byte[] dst) {
-		QoiColorDelta delta = pixel.getDelta();
+	public int encode(QoiFlowPixelData pixel, byte[] dst) {
+		QoiFlowColorDelta delta = pixel.getDelta();
 		if ((bitsA == 0) && delta.da() != 0) {
 			return -1;
 		}
 
-		QoiColor color = pixel.getColor();
+		QoiFlowColor color = pixel.getColor();
 
 		int p        = 1;
 		int mask     = 0b0000;
@@ -84,7 +84,7 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 	}
 
 	@Override
-	public QoiColorRun decode(int code, ByteBuffer src, QoiColor lastColor) {
+	public QoiFlowColorRun decode(int code, ByteBuffer src, QoiFlowColor lastColor) {
 		int mask;
 		if (bitsA > 0) {
 			mask = (code - codeOffset) & 0b1111;
@@ -118,14 +118,14 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 			a = lastColor.a();
 		}
 
-		QoiColor color = new QoiColor(r, g, b, a);
+		QoiFlowColor color = new QoiFlowColor(r, g, b, a);
 
 		if (statistics != null) {
 			int numBytes = Integer.bitCount(mask) + 1;
 			logStatistics(src, mask, numBytes, color);
 		}
 
-		return new QoiColorRun(color, 1);
+		return new QoiFlowColorRun(color, 1);
 	}
 
 	@Override
@@ -138,15 +138,15 @@ public class QoiInstructionMaskRGBA extends QoiInstruction {
 		return "MASK";
 	}
 
-	private void logStatistics(ByteBuffer src, int mask, int numBytes, QoiColor color) {
+	private void logStatistics(ByteBuffer src, int mask, int numBytes, QoiFlowColor color) {
 		logStatistics(src.array(), mask, src.position() - numBytes, numBytes, color);
 	}
 
-	private void logStatistics(byte[] dst, int mask, int numBytes, QoiColor color) {
+	private void logStatistics(byte[] dst, int mask, int numBytes, QoiFlowColor color) {
 		logStatistics(dst, mask, 0, numBytes, color);
 	}
 
-	private void logStatistics(byte[] dst, int mask, int start, int numBytes, QoiColor color) {
+	private void logStatistics(byte[] dst, int mask, int start, int numBytes, QoiFlowColor color) {
 		switch (numBytes) {
 			case 2:
 				statistics.recordMask(this,
