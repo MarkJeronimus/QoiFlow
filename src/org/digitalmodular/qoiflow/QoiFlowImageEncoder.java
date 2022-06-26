@@ -1,11 +1,11 @@
 package org.digitalmodular.qoiflow;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
+import java.awt.image.DataBufferInt;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -34,6 +34,8 @@ public class QoiFlowImageEncoder {
 	public ByteBuffer encode(BufferedImage image) {
 		Objects.requireNonNull(image, "image");
 
+		image = QoiFlowUtilities.asCompatibleImage(image);
+
 		int width  = image.getWidth();
 		int height = image.getHeight();
 
@@ -58,28 +60,22 @@ public class QoiFlowImageEncoder {
 	}
 
 	private void encodeImage(BufferedImage image, ByteBuffer dst) {
-		boolean hasAlpha  = image.getColorModel().hasAlpha();
-		int     imageType = hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR;
-
-		BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(), imageType);
-
-		Graphics2D g = convertedImage.createGraphics();
-		try {
-			g.setComposite(AlphaComposite.Src);
-			g.drawImage(image, 0, 0, null);
-		} finally {
-			g.dispose();
+		DataBuffer dataBuffer = image.getRaster().getDataBuffer();
+		if (dataBuffer instanceof DataBufferByte) {
+			encodeComponentColorModelImage(image, dst);
+		} else if (dataBuffer instanceof DataBufferInt) {
+			encodeDirectColorModelImage(image, dst);
+		} else {
+			throw new AssertionError("Analyzer returned invalid image: " + image);
 		}
-
-		encodeComponentColorModelImage(convertedImage.getRaster(), hasAlpha, dst);
 	}
 
-	private void encodeComponentColorModelImage(Raster raster, boolean hasAlpha, ByteBuffer dst) {
-		byte[] samples     = ((DataBufferByte)raster.getDataBuffer()).getData();
-		int[]  bandOffsets = ((ComponentSampleModel)raster.getSampleModel()).getBandOffsets();
+	private void encodeComponentColorModelImage(BufferedImage image, ByteBuffer dst) {
+		byte[] samples     = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+		int[]  bandOffsets = ((ComponentSampleModel)image.getSampleModel()).getBandOffsets();
 
 		int p = 0;
-		if (hasAlpha) {
+		if (bandOffsets.length == 4) {
 			while (p < samples.length) {
 				byte r = samples[p + bandOffsets[0]];
 				byte g = samples[p + bandOffsets[1]];
@@ -88,7 +84,7 @@ public class QoiFlowImageEncoder {
 				codec.encode(new QoiColor(r, g, b, a), dst);
 				p += 4;
 			}
-		} else {
+		} else if (bandOffsets.length == 3) {
 			while (p < samples.length) {
 				byte r = samples[p + bandOffsets[0]];
 				byte g = samples[p + bandOffsets[1]];
@@ -96,6 +92,32 @@ public class QoiFlowImageEncoder {
 				codec.encode(new QoiColor(r, g, b, (byte)255), dst);
 				p += 3;
 			}
+		} else {
+			throw new AssertionError("Analyzer returned invalid image: " + image);
+		}
+	}
+
+	private void encodeDirectColorModelImage(BufferedImage image, ByteBuffer dst) {
+		int[] pixels     = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+		int[] bitOffsets = ((SinglePixelPackedSampleModel)image.getSampleModel()).getBitOffsets();
+
+		if (bitOffsets.length == 4) {
+			for (int pixel : pixels) {
+				byte r = (byte)(pixel >> bitOffsets[0]);
+				byte g = (byte)(pixel >> bitOffsets[1]);
+				byte b = (byte)(pixel >> bitOffsets[2]);
+				byte a = (byte)(pixel >> bitOffsets[3]);
+				codec.encode(new QoiColor(r, g, b, a), dst);
+			}
+		} else if (bitOffsets.length == 3) {
+			for (int pixel : pixels) {
+				byte r = (byte)(pixel >> bitOffsets[0]);
+				byte g = (byte)(pixel >> bitOffsets[1]);
+				byte b = (byte)(pixel >> bitOffsets[2]);
+				codec.encode(new QoiColor(r, g, b, (byte)255), dst);
+			}
+		} else {
+			throw new AssertionError("Analyzer returned invalid image: " + image.getSampleModel());
 		}
 	}
 
