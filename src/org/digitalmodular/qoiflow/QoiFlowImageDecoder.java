@@ -50,6 +50,9 @@ public class QoiFlowImageDecoder {
 			throw new IOException("Bad height: " + height);
 		}
 
+		src.get();
+		src.get();
+
 		// TODO read instruction table
 	}
 

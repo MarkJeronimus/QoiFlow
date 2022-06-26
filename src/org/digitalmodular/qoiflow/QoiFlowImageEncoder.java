@@ -46,7 +46,7 @@ public class QoiFlowImageEncoder {
 
 		codec.reset();
 
-		writeHeader(width, height, dst);
+		writeHeader(width, height, componentFormat, dst);
 		encodeImage(image, dst);
 		codec.finishEncoding(dst);
 		writeFooter(dst);
@@ -54,10 +54,12 @@ public class QoiFlowImageEncoder {
 		return dst;
 	}
 
-	private static void writeHeader(int width, int height, ByteBuffer dst) {
+	private static void writeHeader(int width, int height, QoiComponentFormat componentFormat, ByteBuffer dst) {
 		dst.putInt(QOIF_MAGIC);
 		dst.putInt(width);
 		dst.putInt(height);
+		dst.put((byte)(componentFormat.bitsR() << 4 | componentFormat.bitsG()));
+		dst.put((byte)(componentFormat.bitsB() << 4 | componentFormat.bitsA()));
 
 		// TODO write instruction table
 	}

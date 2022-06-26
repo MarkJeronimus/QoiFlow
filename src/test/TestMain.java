@@ -33,6 +33,7 @@ import org.digitalmodular.qoiflow.instruction.QoiInstructionDelta;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionMaskRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRGBA;
 import org.digitalmodular.qoiflow.instruction.QoiInstructionRunLength;
+import org.digitalmodular.util.HexUtilities;
 
 /**
  * @author Mark Jeronimus
@@ -48,8 +49,9 @@ public class TestMain {
 	private static final QoiInstruction chroma8  = new QoiInstructionChroma(2, 2, 2, 2);
 	private static final QoiInstruction maskRGB  = new QoiInstructionMaskRGBA(false);
 	private static final QoiInstruction maskRGBA = new QoiInstructionMaskRGBA(true);
-	private static final QoiInstruction rgba24   = new QoiInstructionRGBA(8, 8, 8, 0);
-	private static final QoiInstruction rgba32   = new QoiInstructionRGBA(8, 8, 8, 8);
+	private static final QoiInstruction rgba441  = new QoiInstructionRGBA(4, 4, 1, 0);
+	private static final QoiInstruction rgba888  = new QoiInstructionRGBA(8, 8, 8, 0);
+	private static final QoiInstruction rgba8888 = new QoiInstructionRGBA(8, 8, 8, 8);
 
 	static final List<Path> files = new ArrayList<>(20000);
 
@@ -57,7 +59,7 @@ public class TestMain {
 	private static final QoiStatistics      allStatistics = new QoiStatistics();
 
 	static {
-		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, chroma6, chroma8, rgba32));
+		codec = new QoiFlowStreamCodec(Arrays.asList(rle, hist, chroma6, chroma8, rgba8888));
 		codec.setVariableLength(0, codec.getNumVariableCodes() >> 1);
 		codec.printCodeOffsets();
 	}
@@ -112,7 +114,8 @@ public class TestMain {
 
 			if (codec.getStatistics() != null) {
 				codec.getStatistics().reset();
-//				System.out.println(HexUtilities.hexArrayToString(qoiData.array(), qoiData.position(), 4, 8, 12, -5));
+				System.out.println(HexUtilities.hexArrayToString(
+						qoiData.array(), qoiData.position(), 4, 8, 12, 16, -5));
 			}
 
 			qoiData.flip();

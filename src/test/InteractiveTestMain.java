@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.stream.IntStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,12 +20,12 @@ import javax.swing.WindowConstants;
 import org.digitalmodular.qoiflow.QoiStatistics;
 
 /**
- * @author author
+ * @author Mark Jeronimus
  */
 // Created 2022-05-22
 // Changed 2022-06-18 Copied from FluidQOI
 public class InteractiveTestMain extends JPanel {
-	private static int fileIndex = 0;
+	private static int fileIndex = 4890;
 
 	private BufferedImage image1 = null;
 	private BufferedImage image2 = null;
@@ -44,16 +43,16 @@ public class InteractiveTestMain extends JPanel {
 		}
 
 //		fileIndex = ThreadLocalRandom.current().nextInt(TestMain.files.size());
-		fileIndex = IntStream.range(0, TestMain.files.size())
-		                     .filter(i -> {
-			                     Path file = TestMain.files.get(i);
-			                     return file.getFileName().toString().startsWith("6C74F6B6");
-		                     })
-		                     .findFirst()
-		                     .orElse(0);
+//		fileIndex = IntStream.range(0, TestMain.files.size())
+//		                     .filter(i -> {
+//			                     Path file = TestMain.files.get(i);
+//			                     return file.getFileName().toString().startsWith("858B2A00");
+//		                     })
+//		                     .findFirst()
+//		                     .orElse(0);
 
 		TestMain.codec.setStatistics(new QoiStatistics());
-		TestMain.codec.getStatistics().setDumpIndividualInstructions(true);
+//		TestMain.codec.getStatistics().setDumpIndividualInstructions(true);
 
 		SwingUtilities.invokeLater(() -> {
 			JFrame f = new JFrame();
